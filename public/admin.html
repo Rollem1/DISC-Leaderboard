@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-input { padding: 8px 12px; font-size: 16px; border-radius: 4px; border: 1px solid #555; background: #111; color: #fff; }
+    .admin-button { padding: 8px 16px; font-size: 16px; background: #0ff; color: #000; border: none; border-radius: 4px; cursor: pointer; }
+    .admin-button:hover { background: #0cc; }
+    form, select, button { margin: 10px 0; }
+    .admin-row { display: flex; align-items: center; gap: 10px; margin: 10px auto; width: 90%; max-width: 800px; background: #222; padding: 10px; border-radius: 5px; }
+    .admin-row strong { flex: 2; text-align: left; }
+    .admin-row span { flex: 1; color: #ccc; text-align: left; }
+
+    /* Popup styling */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      z-index: 1000;
+      color: #fff;
+      width: 340px;
+      text-align: left;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .popup h2 { margin-top: 0; }
+    .popup label { display:block; margin:8px 0; }
+  </style>
+</head>
+<body>
+  <h1>Admin Panel</h1>
+
+  <h2>Competition Settings</h2>
+  <form id="configForm">
+    <input type="text" id="competition" class="admin-input" placeholder="Competition Name">
+    <button type="submit" class="admin-button">Update</button>
+  </form>
+
+  <h2>Upload Skater List (CSV)</h2>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="file" name="file" accept=".csv" required class="admin-input">
+    <button type="submit" class="admin-button">Upload</button>
+  </form>
+  
+	<h3>Background Image</h3>
+	<form id="bgForm" enctype="multipart/form-data">
+	  <input type="file" name="file" accept="image/*">
+	  <button type="submit">Upload Background</button>
+	</form>
+	
+<button id="clearBg">Clear Background</button>
+  <h2>View Mode</h2>
+  <button class="admin-button" onclick="setViewMode('scoreboard')">Show Scoreboard</button>
+  <button class="admin-button" onclick="setViewMode('warmup')">Show Warm-Up</button>
+  <button class="admin-button" onclick="setViewMode('message')">Show Message</button>
+
+  <h2>General Message</h2>
+  <textarea id="messageText" class="admin-input" rows="3"
+    placeholder="Enter message e.g. Back after lunch at 14:30"></textarea>
+  <button class="admin-button" onclick="updateMessage()">Update Message</button>
+
+  <h2>Select Warm-Up Group</h2>
+  <select id="warmupSelect" onchange="setWarmupGroup()" class="admin-input">
+    <option value="1">Group 1</option>
+    <option value="2">Group 2</option>
+    <option value="3">Group 3</option>
+    <option value="4">Group 4</option>
+    <option value="5">Group 5</option>
+  </select>
+
+  <h2>Skaters</h2>
+  <div id="skaterList"></div>
+
+  <h2>Font Settings</h2>
+  <button class="admin-button" onclick="openFontPopup()">Open Font Settings</button>
+
+  <!-- Popup -->
+  <div id="fontPopup" class="popup">
+    <h2>Font Size Settings</h2>
+    <label>Competition Heading Font Size:
+      <input type="number" id="competitionFont" class="admin-input" value="54"> px
+    </label>
+    <label>Category Heading Font Size:
+      <input type="number" id="categoryFont" class="admin-input" value="54"> px
+    </label>
+    <label>Table Font Size:
+      <input type="number" id="tableFont" class="admin-input" value="54"> px
+    </label>
+    <label>Scoreboard Banner Font Size:
+      <input type="number" id="scoreboardFont" class="admin-input" value="54"> px
+    </label>
+    <label>Warm-Up Banner Font Size:
+      <input type="number" id="warmupFont" class="admin-input" value="54"> px
+    </label>
+    <label>Message Banner/Box Font Size:
+      <input type="number" id="messageFont" class="admin-input" value="54"> px
+    </label>
+    <label>Current/Next Skater Font Size:
+      <input type="number" id="currentNextFont" class="admin-input" value="54"> px
+    </label>
+    <button class="admin-button" onclick="applyFontSettings()">Apply</button>
+    <button class="admin-button" onclick="closeFontPopup()">Close</button>
+  </div>
+
+  <p id="status"></p>
+
+  <script>
+    // Competition name update
+    document.getElementById('configForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const competitionName = document.getElementById('competition').value;
+      try {
+        await fetch('/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ competitionName })
+        });
+        document.getElementById('status').textContent = 'Competition settings updated!';
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error updating competition: ' + err.message;
+      }
+    });
+
+    // CSV upload
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('file');
+      const file = fileInput.files[0];
+      if (!file) {
+        document.getElementById('status').textContent = 'Please select a CSV file first.';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Upload failed');
+        const data = await res.json();
+
+        // Category driven by filename
+        const categoryName = file.name.replace(/\.[^/.]+$/, "");
+        await fetch('/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ categoryName })
+        });
+
+        renderSkaters(data.leaderboard || []);
+        document.getElementById('status').textContent =
+          `Uploaded file: ${file.name}, ${data.leaderboard?.length || 0} skaters!`;
+      } catch (err) {
+        document.getElementById('status').textContent = 'Upload error: ' + err.message;
+      }
+    });
+
+    // Render skaters with per-row update
+    function renderSkaters(skaters) {
+      const container = document.getElementById('skaterList');
+      container.innerHTML = '';
+      (skaters || []).forEach(skater => {
+        const safeId = skater.name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const div = document.createElement('div');
+        div.classList.add('admin-row');
+        div.innerHTML = `
+          <strong>${skater.name}</strong>
+          <span>${skater.club} [Group ${skater.group}]</span>
+          <input type="text" id="score-${safeId}" class="admin-input" placeholder="Score or DNF/DQ">
+          <button class="admin-button" onclick="updateScore('${skater.name}', 'score-${safeId}')">Update</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function updateScore(name, inputId) {
+      const score = document.getElementById(inputId).value;
+      try {
+        await fetch('/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, score })
+        });
+        document.getElementById('status').textContent = `Score updated for ${name}!`;
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error updating score: ' + err.message;
+      }
+    }
+    // View mode
+    async function setViewMode(mode) {
+      try {
+        await fetch('/setViewMode', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode })
+        });
+        document.getElementById('status').textContent = `View mode set to ${mode}`;
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error setting view mode: ' + err.message;
+      }
+    }
+
+    async function setWarmupGroup() {
+      const group = document.getElementById('warmupSelect').value;
+      try {
+        await fetch('/setWarmupGroup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ group })
+        });
+        document.getElementById('status').textContent = `Warm-up group set to ${group}`;
+        await setViewMode('warmup');
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error setting warm-up group: ' + err.message;
+      }
+    }
+
+    async function updateMessage() {
+      const message = document.getElementById('messageText').value;
+      try {
+        await fetch('/setMessage', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        document.getElementById('status').textContent = 'Message updated!';
+        await setViewMode('message');
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error updating message: ' + err.message;
+      }
+    }
+
+    function openFontPopup() {
+      document.getElementById('fontPopup').style.display = 'block';
+    }
+    function closeFontPopup() {
+      document.getElementById('fontPopup').style.display = 'none';
+    }
+
+    async function applyFontSettings() {
+      const competitionFont = document.getElementById('competitionFont').value;
+      const categoryFont = document.getElementById('categoryFont').value;
+      const tableFont = document.getElementById('tableFont').value;
+      const scoreboardFont = document.getElementById('scoreboardFont').value;
+      const warmupFont = document.getElementById('warmupFont').value;
+      const messageFont = document.getElementById('messageFont').value;
+      const currentNextFont = document.getElementById('currentNextFont').value;
+
+      try {
+        await fetch('/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            competitionFont, categoryFont, tableFont,
+            scoreboardFont, warmupFont, messageFont,
+            currentNextFont
+          })
+        });
+        document.getElementById('status').textContent = 'Font sizes updated!';
+        closeFontPopup();
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error updating font sizes: ' + err.message;
+      }
+    }
+	
+// Background image upload
+document.getElementById('bgForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  try {
+    const res = await fetch('/uploadBackground', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error('Upload failed');
+    const data = await res.json();
+    document.getElementById('status').textContent = `Background updated!`;
+  } catch (err) {
+    document.getElementById('status').textContent = 'Background upload error: ' + err.message;
+  }
+});
+
+// Clear background
+document.getElementById('clearBg').addEventListener('click', async () => {
+  try {
+    await fetch('/clearBackground', { method: 'POST' });
+    document.getElementById('status').textContent = 'Background cleared!';
+  } catch (err) {
+    document.getElementById('status').textContent = 'Error clearing background: ' + err.message;
+  }
+});
+    // Default warm-up group on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('warmupSelect');
+      if (select) {
+        select.value = "1";
+        setWarmupGroup();
+      }
+    });
+  </script>
+</body>
+</html>
