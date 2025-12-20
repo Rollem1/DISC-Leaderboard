@@ -302,3 +302,19 @@ input[type="file"].admin-input {
     max-width: 1350px;
   }
 }
+
+/* MOBILE FONT SCALE-DOWN */
+@media (max-width: 600px) {
+  /* Reduce all admin-controlled font sizes by ~50% */
+  h1, h2,
+  #currentSkater, #nextSkater,
+  .leaderboard-row,
+  .leaderboard-row .position,
+  .leaderboard-row .name,
+  .leaderboard-row .club,
+  .leaderboard-row .score,
+  #generalMessage,
+  #warmupList > div {
+    font-size: calc(var(--mobile-scale, 0.55) * 1px) !important;
+  }
+}
