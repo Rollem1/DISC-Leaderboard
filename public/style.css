@@ -303,11 +303,16 @@ input[type="file"].admin-input {
   }
 }
 
-/* MOBILE FONT SCALE-DOWN */
+/* =========================================================
+   MOBILE FONT SIZE LIMITER (OVERRIDES INLINE SIZES)
+   ========================================================= */
 @media (max-width: 600px) {
-  /* Reduce all admin-controlled font sizes by ~50% */
-  h1, h2,
-  #currentSkater, #nextSkater,
+
+  /* Cap all admin-controlled text sizes on mobile */
+  #header h1,              /* Competition name */
+  .fixed-header h2,        /* Banner text */
+  #currentSkater,
+  #nextSkater,
   .leaderboard-row,
   .leaderboard-row .position,
   .leaderboard-row .name,
@@ -315,6 +320,7 @@ input[type="file"].admin-input {
   .leaderboard-row .score,
   #generalMessage,
   #warmupList > div {
-    font-size: calc(var(--mobile-scale, 0.55) * 1px) !important;
+    font-size: 26px !important;   /* adjust this number as needed */
+    line-height: 1.2 !important;
   }
 }
