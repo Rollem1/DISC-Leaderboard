@@ -45,16 +45,21 @@ function positionScrollWrapper() {
 }
 
 function renderFromState(data) {
+  const isMobile = window.innerWidth <= 600;
+
+  // Competition name
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
   if (categoryEl) categoryEl.textContent = '';
 
+  // Background image
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
   } else {
     document.body.style.setProperty('--overlay-bg', 'none');
   }
 
-  if (data.fontSizes) {
+  // Apply admin font sizes ONLY on desktop
+  if (data.fontSizes && !isMobile) {
     if (competitionEl) competitionEl.style.fontSize = data.fontSizes.competition + 'px';
 
     if (scoreboardBanner) scoreboardBanner.style.fontSize = data.fontSizes.scoreboard + 'px';
@@ -73,6 +78,7 @@ function renderFromState(data) {
     });
   }
 
+  // Route to correct view
   if (data.viewMode === 'scoreboard') {
     renderScoreboardView(data);
   } else if (data.viewMode === 'warmup') {
@@ -81,7 +87,7 @@ function renderFromState(data) {
     renderMessageView(data);
   }
 
-  // Apply mobile overrides AFTER state render
+  // Apply mobile overrides AFTER rendering
   applyMobileFontOverrides();
 }
 
@@ -129,7 +135,7 @@ function renderScoreboardView(data) {
     row.classList.add('leaderboard-row');
     if (index < 3) row.classList.add('top3');
 
-    if (data.fontSizes && data.fontSizes.table) {
+    if (data.fontSizes && data.fontSizes.table && window.innerWidth > 600) {
       row.style.fontSize = data.fontSizes.table + 'px';
     }
 
@@ -202,7 +208,7 @@ function renderWarmupView(data) {
       const order = skater.order != null ? `${skater.order}. ` : '';
       row.textContent = `${order}${skater.name} (${skater.club})`;
 
-      if (data.fontSizes && data.fontSizes.table) {
+      if (data.fontSizes && data.fontSizes.table && window.innerWidth > 600) {
         row.style.fontSize = data.fontSizes.table + 'px';
       }
 
@@ -212,7 +218,7 @@ function renderWarmupView(data) {
   } else {
     const row = document.createElement('div');
     row.textContent = 'No skaters in this group';
-    if (data.fontSizes && data.fontSizes.table) {
+    if (data.fontSizes && data.fontSizes.table && window.innerWidth > 600) {
       row.style.fontSize = data.fontSizes.table + 'px';
     }
     warmupList.appendChild(row);
