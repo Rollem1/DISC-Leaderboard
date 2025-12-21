@@ -307,18 +307,13 @@ input[type="file"].admin-input {
   --mobile-scale: 0.55; /* 55% of desktop size */
 }
 
-/* MOBILE FONT SCALE-DOWN */
+/* =========================================================
+   MOBILE INLINE FONT OVERRIDE (NUCLEAR OPTION)
+   ========================================================= */
 @media (max-width: 600px) {
-  /* Reduce all admin-controlled font sizes by ~50% */
-  h1, h2,
-  #currentSkater, #nextSkater,
-  .leaderboard-row,
-  .leaderboard-row .position,
-  .leaderboard-row .name,
-  .leaderboard-row .club,
-  .leaderboard-row .score,
-  #generalMessage,
-  #warmupList > div {
-    font-size: calc(var(--mobile-scale, 0.55) * 1px) !important;
+  /* Override any element with inline font-size */
+  [style*="font-size"] {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
   }
 }
