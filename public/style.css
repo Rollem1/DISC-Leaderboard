@@ -303,16 +303,8 @@ input[type="file"].admin-input {
   }
 }
 
-:root {
-  --mobile-scale: 0.55; /* 55% of desktop size */
-}
-
-/* =========================================================
-   MOBILE INLINE FONT OVERRIDE (NUCLEAR OPTION)
-   ========================================================= */
 @media (max-width: 600px) {
-  /* Override any element with inline font-size */
-  [style*="font-size"] {
+  h1#competitionName {
     font-size: 20px !important;
     line-height: 1.2 !important;
   }
