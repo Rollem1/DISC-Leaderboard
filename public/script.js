@@ -92,6 +92,8 @@ function renderFromState(data) {
 }
 
 function renderScoreboardView(data) {
+  const isMobile = window.innerWidth <= 600;
+
   hideAllViews();
   scoreboardView.style.display = 'block';
 
@@ -135,7 +137,8 @@ function renderScoreboardView(data) {
     row.classList.add('leaderboard-row');
     if (index < 3) row.classList.add('top3');
 
-    if (data.fontSizes && data.fontSizes.table && window.innerWidth > 600) {
+    // Desktop only
+    if (!isMobile && data.fontSizes && data.fontSizes.table) {
       row.style.fontSize = data.fontSizes.table + 'px';
     }
 
@@ -187,6 +190,8 @@ function renderScoreboardView(data) {
 }
 
 function renderWarmupView(data) {
+  const isMobile = window.innerWidth <= 600;
+
   hideAllViews();
   warmupView.style.display = 'block';
 
@@ -208,7 +213,7 @@ function renderWarmupView(data) {
       const order = skater.order != null ? `${skater.order}. ` : '';
       row.textContent = `${order}${skater.name} (${skater.club})`;
 
-      if (data.fontSizes && data.fontSizes.table && window.innerWidth > 600) {
+      if (!isMobile && data.fontSizes && data.fontSizes.table) {
         row.style.fontSize = data.fontSizes.table + 'px';
       }
 
@@ -218,7 +223,7 @@ function renderWarmupView(data) {
   } else {
     const row = document.createElement('div');
     row.textContent = 'No skaters in this group';
-    if (data.fontSizes && data.fontSizes.table && window.innerWidth > 600) {
+    if (!isMobile && data.fontSizes && data.fontSizes.table) {
       row.style.fontSize = data.fontSizes.table + 'px';
     }
     warmupList.appendChild(row);
@@ -245,12 +250,18 @@ function adjustScrollSpeed() {
 }
 
 function renderMessageView(data) {
+  const isMobile = window.innerWidth <= 600;
+
   hideAllViews();
   messageView.style.display = 'flex';
 
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
   if (messageBanner) {
     messageBanner.textContent = 'Announcement';
+  }
+
+  if (!isMobile) {
+    generalMessage.style.fontSize = data.fontSizes.message + 'px';
   }
 
   generalMessage.textContent = data.message || 'No message set';
