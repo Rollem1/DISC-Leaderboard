@@ -44,8 +44,12 @@ function positionScrollWrapper() {
   scrollWrapper.style.height = `${window.innerHeight - top}px`;
 }
 
+function isMobile() {
+  return window.matchMedia("(max-width: 600px)").matches;
+}
+
 function renderFromState(data) {
-  const isMobile = window.innerWidth <= 600;
+  const mobile = isMobile();
 
   // Competition name
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
@@ -59,7 +63,7 @@ function renderFromState(data) {
   }
 
   // Apply admin font sizes ONLY on desktop
-  if (data.fontSizes && !isMobile) {
+  if (data.fontSizes && !mobile) {
     if (competitionEl) competitionEl.style.fontSize = data.fontSizes.competition + 'px';
 
     if (scoreboardBanner) scoreboardBanner.style.fontSize = data.fontSizes.scoreboard + 'px';
@@ -92,7 +96,7 @@ function renderFromState(data) {
 }
 
 function renderScoreboardView(data) {
-  const isMobile = window.innerWidth <= 600;
+  const mobile = isMobile();
 
   hideAllViews();
   scoreboardView.style.display = 'block';
@@ -138,7 +142,7 @@ function renderScoreboardView(data) {
     if (index < 3) row.classList.add('top3');
 
     // Desktop only
-    if (!isMobile && data.fontSizes && data.fontSizes.table) {
+    if (!mobile && data.fontSizes && data.fontSizes.table) {
       row.style.fontSize = data.fontSizes.table + 'px';
     }
 
@@ -190,7 +194,7 @@ function renderScoreboardView(data) {
 }
 
 function renderWarmupView(data) {
-  const isMobile = window.innerWidth <= 600;
+  const mobile = isMobile();
 
   hideAllViews();
   warmupView.style.display = 'block';
@@ -213,7 +217,7 @@ function renderWarmupView(data) {
       const order = skater.order != null ? `${skater.order}. ` : '';
       row.textContent = `${order}${skater.name} (${skater.club})`;
 
-      if (!isMobile && data.fontSizes && data.fontSizes.table) {
+      if (!mobile && data.fontSizes && data.fontSizes.table) {
         row.style.fontSize = data.fontSizes.table + 'px';
       }
 
@@ -223,7 +227,7 @@ function renderWarmupView(data) {
   } else {
     const row = document.createElement('div');
     row.textContent = 'No skaters in this group';
-    if (!isMobile && data.fontSizes && data.fontSizes.table) {
+    if (!mobile && data.fontSizes && data.fontSizes.table) {
       row.style.fontSize = data.fontSizes.table + 'px';
     }
     warmupList.appendChild(row);
@@ -250,7 +254,7 @@ function adjustScrollSpeed() {
 }
 
 function renderMessageView(data) {
-  const isMobile = window.innerWidth <= 600;
+  const mobile = isMobile();
 
   hideAllViews();
   messageView.style.display = 'flex';
@@ -260,7 +264,7 @@ function renderMessageView(data) {
     messageBanner.textContent = 'Announcement';
   }
 
-  if (!isMobile) {
+  if (!mobile && data.fontSizes) {
     generalMessage.style.fontSize = data.fontSizes.message + 'px';
   }
 
@@ -275,7 +279,7 @@ window.addEventListener('resize', positionScrollWrapper);
    MOBILE FONT OVERRIDES (JS-BASED)
    ========================================================= */
 function applyMobileFontOverrides() {
-  if (window.innerWidth > 600) return;
+  if (!isMobile()) return;
 
   if (competitionEl) {
     competitionEl.style.setProperty("font-size", "20px", "important");
