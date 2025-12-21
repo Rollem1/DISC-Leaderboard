@@ -45,18 +45,15 @@ function positionScrollWrapper() {
 }
 
 function renderFromState(data) {
-  // Competition name always visible (category no longer displayed here)
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
   if (categoryEl) categoryEl.textContent = '';
 
-  // ✅ Background image (CSS variable consumed by CSS)
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
   } else {
     document.body.style.setProperty('--overlay-bg', 'none');
   }
 
-  // Apply font sizes globally if present
   if (data.fontSizes) {
     if (competitionEl) competitionEl.style.fontSize = data.fontSizes.competition + 'px';
 
@@ -68,7 +65,6 @@ function renderFromState(data) {
     if (currentEl) currentEl.style.fontSize = data.fontSizes.currentNext + 'px';
     if (nextEl) nextEl.style.fontSize = data.fontSizes.currentNext + 'px';
 
-    // Safeguard for any already-rendered rows
     document.querySelectorAll('.leaderboard-row').forEach(row => {
       row.style.fontSize = data.fontSizes.table + 'px';
     });
@@ -77,7 +73,6 @@ function renderFromState(data) {
     });
   }
 
-  // Route to the correct view
   if (data.viewMode === 'scoreboard') {
     renderScoreboardView(data);
   } else if (data.viewMode === 'warmup') {
@@ -85,19 +80,20 @@ function renderFromState(data) {
   } else if (data.viewMode === 'message') {
     renderMessageView(data);
   }
+
+  // Apply mobile overrides AFTER state render
+  applyMobileFontOverrides();
 }
 
 function renderScoreboardView(data) {
   hideAllViews();
   scoreboardView.style.display = 'block';
 
-  // Banner: Category + " Leaderboard"
   if (scoreboardBanner) {
     const categoryText = data.categoryName || data.category || '';
     scoreboardBanner.textContent = categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
   }
 
-  // Current / Next
   currentEl.textContent = data.currentSkater
     ? `Current Skater: ${data.currentSkater.name} (${data.currentSkater.club})`
     : '';
@@ -113,7 +109,6 @@ function renderScoreboardView(data) {
     nextEl.textContent = '';
   }
 
-  // Build leaderboard
   leaderboardDiv.innerHTML = '';
   scrollingDiv.innerHTML = '';
 
@@ -134,7 +129,6 @@ function renderScoreboardView(data) {
     row.classList.add('leaderboard-row');
     if (index < 3) row.classList.add('top3');
 
-    // Table font size applied immediately
     if (data.fontSizes && data.fontSizes.table) {
       row.style.fontSize = data.fontSizes.table + 'px';
     }
@@ -176,7 +170,6 @@ function renderScoreboardView(data) {
     else scrollingDiv.appendChild(row);
   });
 
-  // Scrolling animation decision
   requestAnimationFrame(() => {
     positionScrollWrapper();
     const contentHeight = scrollingDiv.scrollHeight;
@@ -191,14 +184,12 @@ function renderWarmupView(data) {
   hideAllViews();
   warmupView.style.display = 'block';
 
-  // Banner: Category + " Warmup {Group}"
   if (warmupBanner) {
     const categoryText = data.categoryName || data.category || '';
     const groupPart = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : ' Warmup';
     warmupBanner.textContent = categoryText ? `${categoryText}${groupPart}` : `Warmup${data.warmupGroup ? ' ' + data.warmupGroup : ''}`;
   }
 
-  // Optional label under banner (keep or remove)
   warmupGroupLabel.textContent = data.warmupGroup ? `Group ${data.warmupGroup}` : '';
 
   warmupList.innerHTML = '';
@@ -211,7 +202,6 @@ function renderWarmupView(data) {
       const order = skater.order != null ? `${skater.order}. ` : '';
       row.textContent = `${order}${skater.name} (${skater.club})`;
 
-      // Table font size for warm-up rows
       if (data.fontSizes && data.fontSizes.table) {
         row.style.fontSize = data.fontSizes.table + 'px';
       }
@@ -244,7 +234,6 @@ function adjustScrollSpeed() {
     warmupList.dataset.scrolled = true;
   }
 
-  // Rough linear mapping (px/s ~ 50)
   const duration = (textHeight * 2) / 50;
   warmupList.style.animation = `scroll-up ${duration}s linear infinite`;
 }
@@ -253,7 +242,6 @@ function renderMessageView(data) {
   hideAllViews();
   messageView.style.display = 'flex';
 
-  // Competition name at top; message banner under it
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
   if (messageBanner) {
     messageBanner.textContent = 'Announcement';
@@ -265,3 +253,35 @@ function renderMessageView(data) {
 // Reposition on load/resize for scoreboard scroll wrapper
 window.addEventListener('load', positionScrollWrapper);
 window.addEventListener('resize', positionScrollWrapper);
+
+/* =========================================================
+   MOBILE FONT OVERRIDES (JS-BASED)
+   ========================================================= */
+function applyMobileFontOverrides() {
+  if (window.innerWidth > 600) return;
+
+  if (competitionEl) {
+    competitionEl.style.setProperty("font-size", "20px", "important");
+    competitionEl.style.setProperty("line-height", "1.2", "important");
+  }
+
+  if (scoreboardBanner) scoreboardBanner.style.setProperty("font-size", "18px", "important");
+  if (warmupBanner) warmupBanner.style.setProperty("font-size", "18px", "important");
+  if (messageBanner) messageBanner.style.setProperty("font-size", "18px", "important");
+
+  if (currentEl) currentEl.style.setProperty("font-size", "18px", "important");
+  if (nextEl) nextEl.style.setProperty("font-size", "18px", "important");
+
+  document.querySelectorAll('.leaderboard-row').forEach(row => {
+    row.style.setProperty("font-size", "16px", "important");
+  });
+
+  document.querySelectorAll('#warmupList > div').forEach(row => {
+    row.style.setProperty("font-size", "16px", "important");
+  });
+
+  if (generalMessage) generalMessage.style.setProperty("font-size", "18px", "important");
+}
+
+window.addEventListener("DOMContentLoaded", applyMobileFontOverrides);
+window.addEventListener("resize", applyMobileFontOverrides);
