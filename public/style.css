@@ -304,7 +304,7 @@ input[type="file"].admin-input {
 }
 
 @media (max-width: 600px) {
-  h1#competitionName {
+  h1#competitionName[style] {
     font-size: 20px !important;
     line-height: 1.2 !important;
   }
