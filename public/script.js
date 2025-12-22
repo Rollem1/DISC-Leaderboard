@@ -22,6 +22,7 @@ function isMobile() {
   return window.matchMedia("(max-width: 600px)").matches;
 }
 
+// Initial state + live updates
 fetch('/state')
   .then(r => r.json())
   .then(renderFromState)
@@ -47,17 +48,20 @@ function renderFromState(data) {
     document.body.style.setProperty('--overlay-bg', 'none');
   }
 
+  // Desktop-only: apply admin font sizes via CSS variables
   if (data.fontSizes && !mobile) {
     document.documentElement.style.setProperty('--header-font', data.fontSizes.competition + 'px');
-    document.documentElement.style.setProperty('--banner-font', data.fontSizes.scoreboard + 'px');
+    document.documentElement.style.setProperty('--scoreboard-banner-font', data.fontSizes.scoreboard + 'px');
+    document.documentElement.style.setProperty('--warmup-banner-font', data.fontSizes.warmup + 'px');
+    document.documentElement.style.setProperty('--message-banner-font', data.fontSizes.message + 'px');
     document.documentElement.style.setProperty('--current-next-font', data.fontSizes.currentNext + 'px');
     document.documentElement.style.setProperty('--table-font', data.fontSizes.table + 'px');
     document.documentElement.style.setProperty('--message-font', data.fontSizes.message + 'px');
   }
 
   if (data.viewMode === 'scoreboard') renderScoreboardView(data);
-  if (data.viewMode === 'warmup') renderWarmupView(data);
-  if (data.viewMode === 'message') renderMessageView(data);
+  else if (data.viewMode === 'warmup') renderWarmupView(data);
+  else if (data.viewMode === 'message') renderMessageView(data);
 }
 
 function renderScoreboardView(data) {
@@ -69,7 +73,8 @@ function renderScoreboardView(data) {
     : '';
 
   if (data.nextSkater) {
-    const remaining = data.leaderboard.filter(p => p.score == null);
+    const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
+      .filter(p => p.score == null);
     const remainingCount = data.currentSkater
       ? remaining.filter(p => p.name !== data.currentSkater.name).length
       : remaining.length;
@@ -81,17 +86,17 @@ function renderScoreboardView(data) {
   leaderboardDiv.innerHTML = '';
   scrollingDiv.innerHTML = '';
 
+  const lb = Array.isArray(data.leaderboard) ? data.leaderboard : [];
   const specials = ['DNF', 'DQ', 'WD'];
-  const scored = data.leaderboard
-    .filter(p => p.score != null)
-    .sort((a, b) => {
-      const aSpecial = specials.includes(String(a.score).toUpperCase());
-      const bSpecial = specials.includes(String(b.score).toUpperCase());
-      if (aSpecial && bSpecial) return 0;
-      if (aSpecial) return 1;
-      if (bSpecial) return -1;
-      return parseFloat(b.score) - parseFloat(a.score);
-    });
+
+  const scored = lb.filter(p => p.score != null).sort((a, b) => {
+    const aSpecial = specials.includes(String(a.score).toUpperCase());
+    const bSpecial = specials.includes(String(b.score).toUpperCase());
+    if (aSpecial && bSpecial) return 0;
+    if (aSpecial) return 1;
+    if (bSpecial) return -1;
+    return parseFloat(b.score) - parseFloat(a.score);
+  });
 
   scored.forEach((player, index) => {
     const row = document.createElement('div');
@@ -100,9 +105,10 @@ function renderScoreboardView(data) {
 
     if (index < 3) {
       const medal = document.createElement('img');
-      medal.src = index === 0 ? "/Gold 100x100px.png"
-               : index === 1 ? "/Silver 100x100px.png"
-               : "/Bronze 100x100px.png";
+      if (index === 0) medal.src = "/Gold 100x100px.png";
+      if (index === 1) medal.src = "/Silver 100x100px.png";
+      if (index === 2) medal.src = "/Bronze 100x100px.png";
+      medal.alt = "Medal";
       row.appendChild(medal);
     } else {
       const spacer = document.createElement('span');
@@ -140,9 +146,10 @@ function renderWarmupView(data) {
   warmupView.style.display = 'block';
 
   warmupGroupLabel.textContent = data.warmupGroup ? `Group ${data.warmupGroup}` : '';
+
   warmupList.innerHTML = '';
 
-  const list = data.warmupSkaters || [];
+  const list = Array.isArray(data.warmupSkaters) ? data.warmupSkaters : [];
   if (list.length > 0) {
     list.forEach(skater => {
       const row = document.createElement('div');

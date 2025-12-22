@@ -25,10 +25,10 @@ let warmupSkaters = [];
 let viewMode = "scoreboard";
 let messageText = "";
 
-// ✅ Background image path (served from /public/backgrounds/)
+// Background image path (served from /public/backgrounds/)
 let backgroundImage = null;
 
-// ✅ Font size state
+// Font size state (desktop defaults)
 let fontSizes = {
   scoreboard: 28,
   warmup: 24,
@@ -48,6 +48,11 @@ function recomputeCurrentNext() {
     : null;
 }
 
+function isMobileUA(ua) {
+  ua = ua || '';
+  return /Mobile|Android|iPhone|iPad/i.test(ua);
+}
+
 function currentPayload() {
   const payload = {
     competitionName,
@@ -57,7 +62,7 @@ function currentPayload() {
     nextSkater,
     viewMode,
     fontSizes,
-    backgroundImage   // ✅ include bg image in payload
+    backgroundImage
   };
   if (viewMode === "warmup") {
     payload.warmupGroup = warmupGroup;
@@ -69,12 +74,27 @@ function currentPayload() {
   return payload;
 }
 
-function broadcast(data = currentPayload()) {
-  const payload = JSON.stringify(data);
+function broadcast() {
+  const base = currentPayload();
+
   wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) client.send(payload);
+    if (client.readyState !== WebSocket.OPEN) return;
+
+    const payloadObj = { ...base };
+    // For mobile clients, remove fontSizes so they never react to admin fonts
+    if (client.isMobile) {
+      delete payloadObj.fontSizes;
+    }
+
+    client.send(JSON.stringify(payloadObj));
   });
 }
+
+// Track UA on WebSocket connection
+wss.on('connection', (ws, req) => {
+  const ua = (req && req.headers && req.headers['user-agent']) || '';
+  ws.isMobile = isMobileUA(ua);
+});
 
 // -------------------- Background upload --------------------
 const backgroundsDir = path.join(__dirname, 'public', 'backgrounds');
@@ -99,7 +119,6 @@ app.post('/uploadBackground', bgUpload.single('file'), (req, res) => {
     return res.status(400).json({ error: "No file uploaded" });
   }
 
-  // Save relative path for client usage
   backgroundImage = `/backgrounds/${req.file.filename}`;
   console.log("✅ Background image uploaded:", backgroundImage);
 
@@ -115,9 +134,19 @@ app.post('/clearBackground', (req, res) => {
 });
 
 // -------------------- Endpoints --------------------
-app.get('/state', (req, res) => res.json(currentPayload()));
+app.get('/state', (req, res) => {
+  const ua = req.headers['user-agent'] || '';
+  const mobile = isMobileUA(ua);
 
-// ✅ Unified config route
+  const payload = currentPayload();
+  if (mobile) {
+    delete payload.fontSizes; // mobile never receives font sizes
+  }
+
+  res.json(payload);
+});
+
+// Unified config route
 app.post('/config', (req, res) => {
   if (req.body.competitionName != null) competitionName = req.body.competitionName;
   if (req.body.categoryName != null) categoryName = req.body.categoryName;
@@ -134,7 +163,7 @@ app.post('/config', (req, res) => {
   broadcast();
 });
 
-// ✅ Upload CSV
+// Upload CSV
 app.post('/upload', multer({ dest: 'uploads/' }).single('file'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No file uploaded" });
@@ -167,7 +196,7 @@ app.post('/upload', multer({ dest: 'uploads/' }).single('file'), (req, res) => {
     });
 });
 
-// ✅ Update score
+// Update score
 app.post('/update', (req, res) => {
   const { name, score } = req.body;
   const player = leaderboard.find(p => p.name === name);
@@ -182,7 +211,7 @@ app.post('/update', (req, res) => {
   }
 });
 
-// ✅ Warmup group
+// Warmup group
 app.post('/setWarmupGroup', (req, res) => {
   warmupGroup = req.body.group ?? null;
   warmupSkaters = warmupGroup != null
@@ -192,14 +221,14 @@ app.post('/setWarmupGroup', (req, res) => {
   broadcast();
 });
 
-// ✅ Message
+// Message
 app.post('/setMessage', (req, res) => {
   messageText = req.body.message || "";
   res.sendStatus(200);
   broadcast();
 });
 
-// ✅ View mode
+// View mode
 app.post('/setViewMode', (req, res) => {
   viewMode = req.body.mode || "scoreboard";
   res.sendStatus(200);

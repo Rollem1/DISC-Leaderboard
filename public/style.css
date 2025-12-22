@@ -5,9 +5,11 @@
   --header-h: 100px;
   --banner-h: 80px;
 
-  /* Desktop font sizes (admin can override via JS) */
+  /* Desktop font sizes (admin overrides via JS) */
   --header-font: 36px;
-  --banner-font: 28px;
+  --scoreboard-banner-font: 28px;
+  --warmup-banner-font: 28px;
+  --message-banner-font: 28px;
   --current-next-font: 24px;
   --table-font: 22px;
   --message-font: 24px;
@@ -59,7 +61,7 @@ html, body {
 }
 
 /* =========================================================
-   FIXED BANNER
+   FIXED BANNERS
    ========================================================= */
 .fixed-header {
   position: fixed;
@@ -74,9 +76,19 @@ html, body {
   z-index: 9999;
 }
 
-.fixed-header h2 {
+#scoreboardBanner {
   margin: 0;
-  font-size: var(--banner-font);
+  font-size: var(--scoreboard-banner-font);
+}
+
+#warmupBanner {
+  margin: 0;
+  font-size: var(--warmup-banner-font);
+}
+
+#messageBanner {
+  margin: 0;
+  font-size: var(--message-banner-font);
 }
 
 /* =========================================================
@@ -141,8 +153,47 @@ html, body {
 }
 
 /* =========================================================
+   WARM-UP VIEW
+   ========================================================= */
+.scroll-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: calc(100vh - (var(--header-h) + var(--banner-h) + 40px));
+}
+
+#warmupList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#warmupList > div {
+  margin: 5px;
+  padding: 10px;
+  background: rgba(34,34,34,0.9);
+  border-radius: 5px;
+  color: #fff;
+  width: 90%;
+  max-width: 1000px;
+  text-align: center;
+  font-size: var(--table-font);
+}
+
+#warmupList > div:nth-child(even) {
+  background: rgba(51,51,51,0.9);
+}
+
+/* =========================================================
    MESSAGE VIEW
    ========================================================= */
+#messageView {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
 #generalMessage {
   max-width: 80%;
   background: rgba(34,34,34,0.9);
@@ -153,17 +204,37 @@ html, body {
 }
 
 /* =========================================================
-   MOBILE OVERRIDES (Fixed sizes)
+   ADMIN INPUTS
    ========================================================= */
+input[type="file"].admin-input {
+  width: 500px;
+}
+
+#messageText {
+  display: block;
+  margin: 0 auto 10px;
+  width: 600px;
+  height: 100px;
+  resize: vertical;
+  text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVE DESIGN
+   ========================================================= */
+
+/* ---------- MOBILE (phones) ---------- */
 @media (max-width: 600px) {
 
   :root {
     --header-h: 70px;
     --banner-h: 60px;
 
-    /* FIXED MOBILE FONT SIZES */
+    /* Fixed mobile sizes */
     --header-font: 20px;
-    --banner-font: 18px;
+    --scoreboard-banner-font: 18px;
+    --warmup-banner-font: 18px;
+    --message-banner-font: 18px;
     --current-next-font: 16px;
     --table-font: 16px;
     --message-font: 18px;
@@ -183,20 +254,20 @@ html, body {
   #warmupList > div {
     width: 95%;
   }
+
+  #messageText {
+    width: 90%;
+  }
 }
 
-/* =========================================================
-   TABLETS
-   ========================================================= */
+/* ---------- TABLETS ---------- */
 @media (max-width: 900px) {
   .leaderboard-row {
     grid-template-columns: 40px 40px 1fr 80px 100px;
   }
 }
 
-/* =========================================================
-   DESKTOP LARGE
-   ========================================================= */
+/* ---------- DESKTOP LARGE ---------- */
 @media (min-width: 1600px) {
   .leaderboard-row,
   #currentNextWrapper {
