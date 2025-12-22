@@ -1,12 +1,16 @@
 /* =========================================================
-   ROOT VARIABLES
+   ROOT VARIABLES (Desktop defaults)
    ========================================================= */
 :root {
-  --header-h: 100px;   /* global header height */
-  --banner-h: 80px;    /* per-view banner height */
+  --header-h: 100px;
+  --banner-h: 80px;
 
-  /* Desktop default header font (can be overridden by JS via CSS var) */
+  /* Desktop font sizes (admin can override via JS) */
   --header-font: 36px;
+  --banner-font: 28px;
+  --current-next-font: 24px;
+  --table-font: 22px;
+  --message-font: 24px;
 }
 
 /* =========================================================
@@ -19,8 +23,7 @@ html, body {
   text-align: center;
   font-family: Arial, sans-serif;
 
-  /* Background image support */
-  background-color: #111; /* fallback if no image */
+  background-color: #111;
   background-image: var(--overlay-bg, none);
   background-size: cover;
   background-position: center;
@@ -38,18 +41,17 @@ html, body {
   left: 0;
   width: 100%;
   height: var(--header-h);
-  background-color: transparent;
-  z-index: 10000;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding-top: 8px;
+  z-index: 10000;
 }
 
 #header h1 {
   margin: 0 0 4px 0;
-  font-size: var(--header-font); /* driven by CSS variable */
+  font-size: var(--header-font);
 }
 
 #header h2 {
@@ -71,9 +73,10 @@ html, body {
   justify-content: center;
   z-index: 9999;
 }
+
 .fixed-header h2 {
-  color: #FFF;
   margin: 0;
+  font-size: var(--banner-font);
 }
 
 /* =========================================================
@@ -84,30 +87,30 @@ html, body {
   padding-top: calc(var(--header-h) + var(--banner-h) + 20px);
   min-height: 100vh;
   box-sizing: border-box;
-  background-color: transparent;
 }
 
 /* =========================================================
    CURRENT / NEXT BLOCK
    ========================================================= */
 #currentNextWrapper {
-  position: relative;
   margin: 10px auto 0;
   width: 90%;
   max-width: 1350px;
   background-color: rgba(17,17,17,0.85);
   padding: 10px 0;
 }
-#currentSkater, #nextSkater {
+
+#currentSkater,
+#nextSkater {
   font-weight: bold;
   margin: 6px 0;
+  font-size: var(--current-next-font);
 }
 
 /* =========================================================
    LEADERBOARD
    ========================================================= */
 #leaderboard {
-  position: relative;
   width: 100%;
   margin-top: 10px;
 }
@@ -121,143 +124,51 @@ html, body {
   padding: 10px;
   background: rgba(34,34,34,0.9);
   border-radius: 5px;
-  color: #fff;
   width: 90%;
   max-width: 1350px;
   white-space: nowrap;
   overflow: hidden;
+  font-size: var(--table-font);
 }
+
 .leaderboard-row img {
   width: 40px;
   height: 40px;
-  justify-self: center;
 }
-.leaderboard-row .position { text-align: center; font-weight: bold; }
-.leaderboard-row .name { text-align: left; }
-.leaderboard-row .club { text-align: left; color: #ccc; }
-.leaderboard-row .score { text-align: right; font-weight: bold; }
 
 .top3 {
   background: rgba(51,51,51,0.9);
-}
-.medal-spacer { display: inline-block; width: 40px; }
-
-/* =========================================================
-   SCROLLING
-   ========================================================= */
-.scroll-wrapper {
-  position: absolute;
-  width: 100%;
-  overflow: hidden;
-  z-index: 0;
-}
-.scrolling { position: relative; will-change: transform; }
-@keyframes scrollOnce {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-100%); }
-}
-
-/* =========================================================
-   WARM-UP VIEW
-   ========================================================= */
-.scroll-container {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  height: calc(100vh - (var(--header-h) + var(--banner-h) + 40px));
-}
-
-#warmupList {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-#warmupList > div {
-  margin: 5px;
-  padding: 10px;
-  background: rgba(34,34,34,0.9);
-  border-radius: 5px;
-  color: #fff;
-  width: 90%;
-  max-width: 1000px;
-  text-align: center;
-}
-#warmupList > div:nth-child(even) {
-  background: rgba(51,51,51,0.9);
-}
-
-.scrolling-text {
-  display: inline-block;
-  will-change: transform;
-  animation: scroll-up linear infinite;
-}
-@keyframes scroll-up {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
 }
 
 /* =========================================================
    MESSAGE VIEW
    ========================================================= */
-#messageView {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
 #generalMessage {
   max-width: 80%;
-  text-align: center;
-  line-height: 1.4;
   background: rgba(34,34,34,0.9);
   padding: 20px;
   border-radius: 8px;
   margin-top: 20px;
+  font-size: var(--message-font);
 }
 
 /* =========================================================
-   ADMIN INPUTS
+   MOBILE OVERRIDES (Fixed sizes)
    ========================================================= */
-input[type="file"].admin-input {
-  width: 500px;
-}
-
-#messageText {
-  display: block;
-  margin: 0 auto 10px;
-  width: 600px;
-  height: 100px;
-  resize: vertical;
-  text-align: center;
-}
-
-/* Popup */
-.popup {
-  display: none;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #222;
-  padding: 20px;
-  border-radius: 8px;
-  z-index: 1000;
-  color: #fff;
-  width: 320px;
-  text-align: left;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-}
-.popup h2 { margin-top: 0; }
-.popup label { display: block; margin: 10px 0; }
-
-/* =========================================================
-   RESPONSIVE DESIGN
-   ========================================================= */
-
-/* ---------- MOBILE (phones) ---------- */
 @media (max-width: 600px) {
 
-  /* Stack leaderboard rows vertically */
+  :root {
+    --header-h: 70px;
+    --banner-h: 60px;
+
+    /* FIXED MOBILE FONT SIZES */
+    --header-font: 20px;
+    --banner-font: 18px;
+    --current-next-font: 16px;
+    --table-font: 16px;
+    --message-font: 18px;
+  }
+
   .leaderboard-row {
     grid-template-columns: 40px 1fr 1fr;
     grid-template-areas:
@@ -267,49 +178,27 @@ input[type="file"].admin-input {
     padding: 12px;
   }
 
-  .leaderboard-row .position { grid-area: pos; }
-  .leaderboard-row .name { grid-area: name; }
-  .leaderboard-row .club { grid-area: club; }
-  .leaderboard-row .score { grid-area: score; }
-
-  /* Reduce spacing */
   #currentNextWrapper,
   #leaderboard,
   #warmupList > div {
     width: 95%;
   }
-
-  /* Header spacing */
-  :root {
-    --header-h: 70px;
-    --banner-h: 60px;
-  }
-
-  /* Mobile header font: fixed, ignores admin */
-  #header h1 {
-    font-size: 20px;
-    line-height: 1.2;
-  }
-
-  #messageText {
-    width: 90%;
-  }
 }
 
-/* ---------- TABLETS ---------- */
+/* =========================================================
+   TABLETS
+   ========================================================= */
 @media (max-width: 900px) {
   .leaderboard-row {
     grid-template-columns: 40px 40px 1fr 80px 100px;
   }
 }
 
-/* ---------- DESKTOP / BIG SCREEN (Look DS) ---------- */
+/* =========================================================
+   DESKTOP LARGE
+   ========================================================= */
 @media (min-width: 1600px) {
-  /* Keep your big-screen layout exactly as designed */
-  .leaderboard-row {
-    max-width: 1350px;
-  }
-
+  .leaderboard-row,
   #currentNextWrapper {
     max-width: 1350px;
   }
