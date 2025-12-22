@@ -23,13 +23,17 @@ const scoreboardBanner = document.getElementById('scoreboardBanner');
 const warmupBanner = document.getElementById('warmupBanner');
 const messageBanner = document.getElementById('messageBanner');
 
-// Mobile detection using CSS media query (works on real iPhones)
+// Mobile detection using CSS media query
 function isMobile() {
   return window.matchMedia("(max-width: 600px)").matches;
 }
 
 // Initial state fetch + live updates
-fetch('/state').then(r => r.json()).then(renderFromState).catch(() => {});
+fetch('/state')
+  .then(r => r.json())
+  .then(renderFromState)
+  .catch(() => {});
+
 ws.onopen = () => console.log("✅ WebSocket connected");
 ws.onmessage = e => renderFromState(JSON.parse(e.data));
 
@@ -63,9 +67,12 @@ function renderFromState(data) {
     document.body.style.setProperty('--overlay-bg', 'none');
   }
 
-  // Apply admin font sizes ONLY on desktop
+  // Desktop only: let admin control header font via CSS variable
   if (data.fontSizes && !mobile) {
-    if (competitionEl) competitionEl.style.fontSize = data.fontSizes.competition + 'px';
+    document.documentElement.style.setProperty(
+      '--header-font',
+      data.fontSizes.competition + 'px'
+    );
   }
 
   // Route to correct view
@@ -77,8 +84,8 @@ function renderFromState(data) {
     renderMessageView(data);
   }
 
-  // Apply header override LAST
-  applyMobileHeaderOverride();
+  // Reposition scroll wrapper after layout changes
+  requestAnimationFrame(positionScrollWrapper);
 }
 
 function renderScoreboardView(data) {
@@ -103,12 +110,59 @@ function renderScoreboardView(data) {
   leaderboardDiv.innerHTML = '';
   scrollingDiv.innerHTML = '';
 
-  requestAnimationFrame(() => {
-    positionScrollWrapper();
+  const lb = Array.isArray(data.leaderboard) ? data.leaderboard : [];
+  const specials = ['DNF', 'DQ', 'WD'];
+
+  const scored = lb.filter(p => p.score != null).sort((a, b) => {
+    const aSpecial = specials.includes(String(a.score).toUpperCase());
+    const bSpecial = specials.includes(String(b.score).toUpperCase());
+    if (aSpecial && bSpecial) return 0;
+    if (aSpecial) return 1;
+    if (bSpecial) return -1;
+    return parseFloat(b.score) - parseFloat(a.score);
   });
 
-  // Apply header override LAST
-  applyMobileHeaderOverride();
+  scored.forEach((player, index) => {
+    const row = document.createElement('div');
+    row.classList.add('leaderboard-row');
+    if (index < 3) row.classList.add('top3');
+
+    if (index < 3) {
+      const medal = document.createElement('img');
+      if (index === 0) medal.src = "/Gold 100x100px.png";
+      if (index === 1) medal.src = "/Silver 100x100px.png";
+      if (index === 2) medal.src = "/Bronze 100x100px.png";
+      medal.alt = "Medal";
+      row.appendChild(medal);
+    } else {
+      const spacer = document.createElement('span');
+      spacer.classList.add('medal-spacer');
+      row.appendChild(spacer);
+    }
+
+    const pos = document.createElement('span');
+    pos.classList.add('position');
+    pos.textContent = index + 1;
+    row.appendChild(pos);
+
+    const name = document.createElement('span');
+    name.classList.add('name');
+    name.textContent = player.name;
+    row.appendChild(name);
+
+    const club = document.createElement('span');
+    club.classList.add('club');
+    club.textContent = player.club;
+    row.appendChild(club);
+
+    const score = document.createElement('span');
+    score.classList.add('score');
+    score.textContent = player.score;
+    row.appendChild(score);
+
+    if (index < 3) leaderboardDiv.appendChild(row);
+    else scrollingDiv.appendChild(row);
+  });
 }
 
 function renderWarmupView(data) {
@@ -119,8 +173,39 @@ function renderWarmupView(data) {
 
   warmupList.innerHTML = '';
 
-  // Apply header override LAST
-  applyMobileHeaderOverride();
+  const list = Array.isArray(data.warmupSkaters) ? data.warmupSkaters : [];
+  if (list.length > 0) {
+    list.forEach(skater => {
+      const row = document.createElement('div');
+      const order = skater.order != null ? `${skater.order}. ` : '';
+      row.textContent = `${order}${skater.name} (${skater.club})`;
+      warmupList.appendChild(row);
+    });
+    adjustScrollSpeed();
+  } else {
+    const row = document.createElement('div');
+    row.textContent = 'No skaters in this group';
+    warmupList.appendChild(row);
+  }
+}
+
+function adjustScrollSpeed() {
+  const container = document.querySelector('.scroll-container');
+  if (!container) return;
+  const containerHeight = container.offsetHeight;
+  const textHeight = warmupList.scrollHeight;
+
+  if (textHeight <= containerHeight) {
+    warmupList.style.animation = 'none';
+    return;
+  }
+  if (!warmupList.dataset.scrolled) {
+    warmupList.innerHTML += warmupList.innerHTML;
+    warmupList.dataset.scrolled = true;
+  }
+
+  const duration = (textHeight * 2) / 50;
+  warmupList.style.animation = `scroll-up ${duration}s linear infinite`;
 }
 
 function renderMessageView(data) {
@@ -128,28 +213,9 @@ function renderMessageView(data) {
   messageView.style.display = 'flex';
 
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
-
   generalMessage.textContent = data.message || 'No message set';
-
-  // Apply header override LAST
-  applyMobileHeaderOverride();
-}
-
-/* =========================================================
-   HEADER-ONLY MOBILE OVERRIDE (runs AFTER every DOM update)
-   ========================================================= */
-function applyMobileHeaderOverride() {
-  if (!isMobile()) return;
-
-  if (competitionEl) {
-    competitionEl.style.setProperty("font-size", "20px", "important");
-    competitionEl.style.setProperty("line-height", "1.2", "important");
-  }
 }
 
 // Reposition on load/resize for scoreboard scroll wrapper
 window.addEventListener('load', positionScrollWrapper);
-window.addEventListener('resize', () => {
-  positionScrollWrapper();
-  applyMobileHeaderOverride();
-});
+window.addEventListener('resize', positionScrollWrapper);

@@ -4,6 +4,9 @@
 :root {
   --header-h: 100px;   /* global header height */
   --banner-h: 80px;    /* per-view banner height */
+
+  /* Desktop default header font (can be overridden by JS via CSS var) */
+  --header-font: 36px;
 }
 
 /* =========================================================
@@ -43,9 +46,12 @@ html, body {
   justify-content: flex-start;
   padding-top: 8px;
 }
+
 #header h1 {
   margin: 0 0 4px 0;
+  font-size: var(--header-font); /* driven by CSS variable */
 }
+
 #header h2 {
   margin: 0;
 }
@@ -279,6 +285,12 @@ input[type="file"].admin-input {
     --banner-h: 60px;
   }
 
+  /* Mobile header font: fixed, ignores admin */
+  #header h1 {
+    font-size: 20px;
+    line-height: 1.2;
+  }
+
   #messageText {
     width: 90%;
   }
@@ -300,12 +312,5 @@ input[type="file"].admin-input {
 
   #currentNextWrapper {
     max-width: 1350px;
-  }
-}
-
-@media (max-width: 600px) {
-  h1#competitionName[style] {
-    font-size: 20px !important;
-    line-height: 1.2 !important;
   }
 }
