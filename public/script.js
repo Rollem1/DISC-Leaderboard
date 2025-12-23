@@ -22,6 +22,17 @@ function isMobile() {
   return window.matchMedia("(max-width: 600px)").matches;
 }
 
+function applyDesktopFonts(fonts) {
+  if (!fonts) return;
+  document.documentElement.style.setProperty('--header-font-desktop', fonts.competition + 'px');
+  document.documentElement.style.setProperty('--scoreboard-banner-font-desktop', fonts.scoreboard + 'px');
+  document.documentElement.style.setProperty('--warmup-banner-font-desktop', fonts.warmup + 'px');
+  document.documentElement.style.setProperty('--message-banner-font-desktop', fonts.message + 'px');
+  document.documentElement.style.setProperty('--current-next-font-desktop', fonts.currentNext + 'px');
+  document.documentElement.style.setProperty('--table-font-desktop', fonts.table + 'px');
+  document.documentElement.style.setProperty('--message-font-desktop', fonts.message + 'px');
+}
+
 // Initial state + live updates
 fetch('/state')
   .then(r => r.json())
@@ -48,15 +59,9 @@ function renderFromState(data) {
     document.body.style.setProperty('--overlay-bg', 'none');
   }
 
-  // Desktop-only: apply admin font sizes via CSS variables
-  if (data.fontSizes && !mobile) {
-    document.documentElement.style.setProperty('--header-font', data.fontSizes.competition + 'px');
-    document.documentElement.style.setProperty('--scoreboard-banner-font', data.fontSizes.scoreboard + 'px');
-    document.documentElement.style.setProperty('--warmup-banner-font', data.fontSizes.warmup + 'px');
-    document.documentElement.style.setProperty('--message-banner-font', data.fontSizes.message + 'px');
-    document.documentElement.style.setProperty('--current-next-font', data.fontSizes.currentNext + 'px');
-    document.documentElement.style.setProperty('--table-font', data.fontSizes.table + 'px');
-    document.documentElement.style.setProperty('--message-font', data.fontSizes.message + 'px');
+  // Desktop-only: apply admin font sizes via desktop variables
+  if (!mobile && data.fontSizes) {
+    applyDesktopFonts(data.fontSizes);
   }
 
   if (data.viewMode === 'scoreboard') renderScoreboardView(data);
@@ -146,7 +151,6 @@ function renderWarmupView(data) {
   warmupView.style.display = 'block';
 
   warmupGroupLabel.textContent = data.warmupGroup ? `Group ${data.warmupGroup}` : '';
-
   warmupList.innerHTML = '';
 
   const list = Array.isArray(data.warmupSkaters) ? data.warmupSkaters : [];
@@ -162,6 +166,30 @@ function renderWarmupView(data) {
     row.textContent = 'No skaters in this group';
     warmupList.appendChild(row);
   }
+
+  // Adjust auto-scroll after DOM update
+  requestAnimationFrame(adjustWarmupScroll);
+}
+
+function adjustWarmupScroll() {
+  const container = document.querySelector('.scroll-container');
+  if (!container) return;
+  const containerHeight = container.offsetHeight;
+  const textHeight = warmupList.scrollHeight;
+
+  if (textHeight <= containerHeight) {
+    warmupList.style.animation = 'none';
+    return;
+  }
+
+  if (!warmupList.dataset.duped) {
+    warmupList.innerHTML += warmupList.innerHTML;
+    warmupList.dataset.duped = '1';
+  }
+
+  const baseSpeed = 50; // pixels per second
+  const duration = (textHeight * 2) / baseSpeed;
+  warmupList.style.animation = `scroll-up ${duration}s linear infinite`;
 }
 
 function renderMessageView(data) {
