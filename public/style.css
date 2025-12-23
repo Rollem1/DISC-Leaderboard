@@ -1,101 +1,100 @@
 :root {
-  --header-h: 100px;
-  --banner-h: 80px;
-
-  /* Desktop defaults (admin can override via JS) */
-  --header-font-desktop: 54px;
-  --scoreboard-banner-font-desktop: 54px;
-  --warmup-banner-font-desktop: 54px;
-  --message-banner-font-desktop: 54px;
-  --current-next-font-desktop: 54px;
-  --table-font-desktop: 54px;
-  --message-font-desktop: 54px;
-
-  /* Mobile fixed set */
-  --header-font-mobile: 20px;
-  --scoreboard-banner-font-mobile: 18px;
-  --warmup-banner-font-mobile: 18px;
-  --message-banner-font-mobile: 18px;
-  --current-next-font-mobile: 16px;
-  --table-font-mobile: 16px;
-  --message-font-mobile: 18px;
-
-  /* Active variables (default to desktop) */
-  --header-font: var(--header-font-desktop);
-  --scoreboard-banner-font: var(--scoreboard-banner-font-desktop);
-  --warmup-banner-font: var(--warmup-banner-font-desktop);
-  --message-banner-font: var(--message-banner-font-desktop);
-  --current-next-font: var(--current-next-font-desktop);
-  --table-font: var(--table-font-desktop);
-  --message-font: var(--message-font-desktop);
+  --header-h: 100px;   /* global header height */
+  --banner-h: 80px;    /* per-view banner height */
 }
 
+/* Base */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  text-align: center;
   font-family: Arial, sans-serif;
-  background-color: #111;
+
+  /* Background image support */
+  background-color: #111; /* fallback if no image */
   background-image: var(--overlay-bg, none);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
   color: #fff;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
 }
 
-/* Header + banner */
+/* Global header */
 #header {
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   width: 100%;
   height: var(--header-h);
+  background-color: transparent; /* let background show through */
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding-top: 8px;
-  z-index: 10000;
+  justify-content: flex-start;   /* align items at top */
+  padding-top: 8px;              /* drop competition name down a few pixels */
 }
-#header h1 { font-size: var(--header-font); margin: 0 0 4px; }
-#header h2 { margin: 0; }
+#header h1 {
+  margin: 0 0 4px 0;             /* competition name spacing */
+}
+#header h2 {
+  margin: 0;                     /* category line no longer used */
+}
 
+/* Per-view banner fixed under header */
 .fixed-header {
   position: fixed;
-  top: calc(var(--header-h) + 4px);
+  top: calc(var(--header-h) + 4px); /* sit just below competition name */
   left: 0;
   width: 100%;
   height: var(--banner-h);
-  background: rgba(34,34,34,0.85);
+  background-color: rgba(34,34,34,0.85); /* semi-transparent so bg shows */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
-#scoreboardBanner { font-size: var(--scoreboard-banner-font); }
-#warmupBanner { font-size: var(--warmup-banner-font); }
-#messageBanner { font-size: var(--message-banner-font); }
+.fixed-header h2 {
+  color: #FFF;
+  margin: 0;
+  /* font-size removed, JS controls */
+}
 
-/* Views */
+/* Each view container reserves space below header + banner */
 .view {
   position: relative;
+  padding-top: calc(var(--header-h) + var(--banner-h) + 20px);
   min-height: 100vh;
   box-sizing: border-box;
-}
-.view-content {
-  padding-top: calc(var(--header-h) + var(--banner-h) + 20px);
-  box-sizing: border-box;
+  z-index: 1;
+  background-color: transparent; /* allow background image to show */
 }
 
-/* Current/Next */
+/* Current/Next under banner (scoreboard) */
+#currentNextWrapper {
+  position: relative;
+  margin: 10px auto 0;
+  width: 90%;
+  max-width: 1350px;
+  background-color: rgba(17,17,17,0.85); /* translucent block */
+  padding: 10px 0;
+}
 #currentSkater, #nextSkater {
-  font-size: var(--current-next-font);
   font-weight: bold;
   margin: 6px 0;
+  /* font-size removed, JS controls */
 }
 
-/* Leaderboard */
+/* Leaderboard block */
+#leaderboard {
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Leaderboard rows */
 .leaderboard-row {
   display: grid;
   grid-template-columns: 50px 50px 1fr 120px 170px;
@@ -103,22 +102,56 @@ html, body {
   gap: 10px;
   margin: 5px auto;
   padding: 10px;
-  background: rgba(34,34,34,0.9);
+  background: rgba(34,34,34,0.9); /* translucent so bg peeks through */
   border-radius: 5px;
+  color: #fff;
   width: 90%;
   max-width: 1350px;
   white-space: nowrap;
   overflow: hidden;
-  font-size: var(--table-font);
+  /* font-size removed, JS controls */
 }
-.top3 { background: rgba(51,51,51,0.9); }
+.leaderboard-row img {
+  width: 40px;
+  height: 40px;
+  justify-self: center;
+}
+.leaderboard-row .position { text-align: center; font-weight: bold; }
+.leaderboard-row .name { text-align: left; }
+.leaderboard-row .club { text-align: left; color: #ccc; }
+.leaderboard-row .score { text-align: right; font-weight: bold; }
+.top3 {
+  background: rgba(51,51,51,0.9);
+  /* font-size removed, JS controls */
+}
+.medal-spacer { display: inline-block; width: 40px; }
 
-/* Warm-up */
+/* Scrolling area below leaderboard */
+.scroll-wrapper {
+  position: absolute;
+  width: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+.scrolling { position: relative; will-change: transform; }
+@keyframes scrollOnce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
+}
+
+/* Warm-up view scroller area */
 .scroll-container {
   position: relative;
   width: 100%;
-  height: calc(100vh - (var(--header-h) + var(--banner-h) + 40px));
   overflow: hidden;
+  height: calc(100vh - (var(--header-h) + var(--banner-h) + 40px));
+}
+
+/* Center the warm-up list and rows */
+#warmupList {
+  display: flex;
+  flex-direction: column;
+  align-items: center;          /* center horizontally */
 }
 #warmupList > div {
   margin: 5px;
@@ -128,40 +161,69 @@ html, body {
   color: #fff;
   width: 90%;
   max-width: 1000px;
-  text-align: center;
-  font-size: var(--table-font);
+  text-align: center;           /* center text inside row */
+  /* font-size removed, JS controls */
 }
 #warmupList > div:nth-child(even) { background: rgba(51,51,51,0.9); }
-.scrolling-text { display:inline-block; will-change:transform; animation:scroll-up 30s linear infinite; }
-@keyframes scroll-up { 0%{transform:translateY(0);} 100%{transform:translateY(-50%);} }
 
-/* Message */
+/* Warm-up scrolling text */
+.scrolling-text {
+  display: inline-block;
+  will-change: transform;
+  animation: scroll-up linear infinite;
+}
+@keyframes scroll-up {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+/* Message view */
+#messageView {
+  display: none;                /* toggled by JS to flex */
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
 #generalMessage {
   max-width: 80%;
+  text-align: center;
+  line-height: 1.4;
   background: rgba(34,34,34,0.9);
   padding: 20px;
   border-radius: 8px;
-  margin-top: 20px;
-  font-size: var(--message-font);
+  margin-top: 20px;             /* spacing below banner */
+  /* font-size removed, JS controls */
 }
 
-/* Mobile overrides */
-@media (max-width: 600px) {
-  :root {
-    --header-h: 70px;
-    --banner-h: 60px;
-    --header-font: var(--header-font-mobile);
-    --scoreboard-banner-font: var(--scoreboard-banner-font-mobile);
-    --warmup-banner-font: var(--warmup-banner-font-mobile);
-    --message-banner-font: var(--message-banner-font-mobile);
-    --current-next-font: var(--current-next-font-mobile);
-    --table-font: var(--table-font-mobile);
-    --message-font: var(--message-font-mobile);
-  }
-  .leaderboard-row {
-    grid-template-columns: 40px 1fr 1fr;
-    white-space: normal;
-    padding: 12px;
-  }
-  #leaderboard, #warmupList > div { width:95%; }
+/* Make file input wider */
+input[type="file"].admin-input {
+  width: 500px;   /* or 100% if you want it to stretch */
 }
+
+#messageText {
+  display: block;        /* ensures it takes its own line */
+  margin: 0 auto 10px;   /* auto left/right margins center it */
+  width: 600px;          /* or whatever width you prefer */
+  height: 100px;         /* taller box */
+  resize: vertical;      /* allow manual resizing */
+  text-align: center;    /* centers the text inside too */
+}
+
+/* Admin font settings popup */
+.popup {
+  display: none;              /* hidden by default */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #222;
+  padding: 20px;
+  border-radius: 8px;
+  z-index: 1000;
+  color: #fff;
+  width: 320px;
+  text-align: left;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+.popup h2 { margin-top: 0; }
+.popup label { display: block; margin: 10px 0; }
