@@ -1,11 +1,8 @@
-/* =========================================================
-   VARIABLES
-   ========================================================= */
 :root {
   --header-h: 100px;
   --banner-h: 80px;
 
-  /* Desktop set (admin can update via JS) */
+  /* Desktop defaults (admin can override via JS) */
   --header-font-desktop: 54px;
   --scoreboard-banner-font-desktop: 54px;
   --warmup-banner-font-desktop: 54px;
@@ -14,7 +11,7 @@
   --table-font-desktop: 54px;
   --message-font-desktop: 54px;
 
-  /* Mobile fixed set (JS never touches these) */
+  /* Mobile fixed set */
   --header-font-mobile: 20px;
   --scoreboard-banner-font-mobile: 18px;
   --warmup-banner-font-mobile: 18px;
@@ -23,7 +20,7 @@
   --table-font-mobile: 16px;
   --message-font-mobile: 18px;
 
-  /* Active variables — default to desktop */
+  /* Active variables (default to desktop) */
   --header-font: var(--header-font-desktop);
   --scoreboard-banner-font: var(--scoreboard-banner-font-desktop);
   --warmup-banner-font: var(--warmup-banner-font-desktop);
@@ -33,36 +30,25 @@
   --message-font: var(--message-font-desktop);
 }
 
-/* =========================================================
-   BASE
-   ========================================================= */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  text-align: center;
   font-family: Arial, sans-serif;
-
   background-color: #111;
   background-image: var(--overlay-bg, none);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
   color: #fff;
-
-  /* Allow normal page scroll; tame overscroll/pull-to-refresh */
   overflow-y: auto;
   overscroll-behavior-y: contain;
 }
 
-/* =========================================================
-   FIXED HEADER + BANNER
-   ========================================================= */
+/* Header + banner */
 #header {
   position: fixed;
-  top: 0;
-  left: 0;
+  top: 0; left: 0;
   width: 100%;
   height: var(--header-h);
   display: flex;
@@ -72,15 +58,8 @@ html, body {
   padding-top: 8px;
   z-index: 10000;
 }
-
-#header h1 {
-  margin: 0 0 4px 0;
-  font-size: var(--header-font);
-}
-
-#header h2 {
-  margin: 0;
-}
+#header h1 { font-size: var(--header-font); margin: 0 0 4px; }
+#header h2 { margin: 0; }
 
 .fixed-header {
   position: fixed;
@@ -88,47 +67,35 @@ html, body {
   left: 0;
   width: 100%;
   height: var(--banner-h);
-  background-color: rgba(34,34,34,0.85);
+  background: rgba(34,34,34,0.85);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
-
 #scoreboardBanner { font-size: var(--scoreboard-banner-font); }
 #warmupBanner { font-size: var(--warmup-banner-font); }
 #messageBanner { font-size: var(--message-banner-font); }
 
-/* =========================================================
-   CONTENT VIEWS (under header + banner)
-   ========================================================= */
+/* Views */
 .view {
   position: relative;
-  /* Push content below fixed header + banner */
-  padding-top: calc(var(--header-h) + var(--banner-h) + 20px);
   min-height: 100vh;
   box-sizing: border-box;
-  /* Let the page scroll naturally; the view itself does not create its own scrollbar */
-  overflow: visible;
+}
+.view-content {
+  padding-top: calc(var(--header-h) + var(--banner-h) + 20px);
+  box-sizing: border-box;
 }
 
-/* =========================================================
-   CURRENT / NEXT
-   ========================================================= */
+/* Current/Next */
 #currentSkater, #nextSkater {
   font-size: var(--current-next-font);
   font-weight: bold;
   margin: 6px 0;
 }
 
-/* =========================================================
-   LEADERBOARD
-   ========================================================= */
-#leaderboard {
-  width: 100%;
-  margin-top: 10px;
-}
-
+/* Leaderboard */
 .leaderboard-row {
   display: grid;
   grid-template-columns: 50px 50px 1fr 120px 170px;
@@ -144,26 +111,15 @@ html, body {
   overflow: hidden;
   font-size: var(--table-font);
 }
-
 .top3 { background: rgba(51,51,51,0.9); }
 
-/* =========================================================
-   WARM-UP VIEW (confined auto-scroll)
-   ========================================================= */
+/* Warm-up */
 .scroll-container {
   position: relative;
   width: 100%;
-  /* Confine scroll animation to this area */
   height: calc(100vh - (var(--header-h) + var(--banner-h) + 40px));
   overflow: hidden;
 }
-
-#warmupList {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 #warmupList > div {
   margin: 5px;
   padding: 10px;
@@ -175,33 +131,11 @@ html, body {
   text-align: center;
   font-size: var(--table-font);
 }
+#warmupList > div:nth-child(even) { background: rgba(51,51,51,0.9); }
+.scrolling-text { display:inline-block; will-change:transform; animation:scroll-up 30s linear infinite; }
+@keyframes scroll-up { 0%{transform:translateY(0);} 100%{transform:translateY(-50%);} }
 
-#warmupList > div:nth-child(even) {
-  background: rgba(51,51,51,0.9);
-}
-
-/* Smooth upward marquee */
-.scrolling-text {
-  display: inline-block;
-  will-change: transform;
-  animation: scroll-up 30s linear infinite;
-}
-
-@keyframes scroll-up {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); }
-}
-
-/* =========================================================
-   MESSAGE VIEW
-   ========================================================= */
-#messageView {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
-
+/* Message */
 #generalMessage {
   max-width: 80%;
   background: rgba(34,34,34,0.9);
@@ -211,15 +145,11 @@ html, body {
   font-size: var(--message-font);
 }
 
-/* =========================================================
-   MOBILE: activate mobile vars
-   ========================================================= */
+/* Mobile overrides */
 @media (max-width: 600px) {
   :root {
     --header-h: 70px;
     --banner-h: 60px;
-
-    /* Switch active variables to mobile set */
     --header-font: var(--header-font-mobile);
     --scoreboard-banner-font: var(--scoreboard-banner-font-mobile);
     --warmup-banner-font: var(--warmup-banner-font-mobile);
@@ -228,34 +158,10 @@ html, body {
     --table-font: var(--table-font-mobile);
     --message-font: var(--message-font-mobile);
   }
-
   .leaderboard-row {
     grid-template-columns: 40px 1fr 1fr;
     white-space: normal;
     padding: 12px;
   }
-
-  #leaderboard,
-  #warmupList > div {
-    width: 95%;
-  }
-}
-
-/* =========================================================
-   TABLETS
-   ========================================================= */
-@media (max-width: 900px) {
-  .leaderboard-row {
-    grid-template-columns: 40px 40px 1fr 80px 100px;
-  }
-}
-
-/* =========================================================
-   DESKTOP LARGE
-   ========================================================= */
-@media (min-width: 1600px) {
-  .leaderboard-row,
-  #currentNextWrapper {
-    max-width: 1350px;
-  }
+  #leaderboard, #warmupList > div { width:95%; }
 }

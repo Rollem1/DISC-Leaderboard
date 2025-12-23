@@ -1,55 +1,46 @@
 <!DOCTYPE html>
-<html>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Competition Overlay</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Global header -->
+  <!-- Fixed header -->
   <div id="header">
-    <!-- These IDs must exist for script.js to update them -->
-    <h1 id="competitionName">Competition Name</h1>
-    <h2 id="categoryName">Category Name</h2>
+    <h1 id="competitionName"></h1>
+    <h2 id="categoryName"></h2>
   </div>
 
-  <!-- Scoreboard View -->
+  <!-- Fixed banner -->
+  <div class="fixed-header">
+    <h3 id="scoreboardBanner">Scoreboard</h3>
+    <h3 id="warmupBanner" style="display:none;">Warm-Up</h3>
+    <h3 id="messageBanner" style="display:none;">Message</h3>
+  </div>
+
+  <!-- Views -->
   <div id="scoreboardView" class="view">
-    <div class="fixed-header">
-      <h2 id="scoreboardBanner">Leader Board</h2>
-    </div>
-
-    <div id="currentNextWrapper">
-      <div id="currentSkater" class="highlight"></div>
-      <div id="nextSkater" class="highlight"></div>
-    </div>
-
-    <div id="leaderboard"></div>
-
-    <div id="scrollWrapper" class="scroll-wrapper">
-      <div id="scrollingList" class="scrolling"></div>
+    <div class="view-content">
+      <div id="currentSkater"></div>
+      <div id="nextSkater"></div>
+      <div id="leaderboard"></div>
+      <div id="scrollingList"></div>
     </div>
   </div>
 
-  <!-- Warm-up View -->
   <div id="warmupView" class="view" style="display:none;">
-    <div class="fixed-header">
-      <h2 id="warmupBanner">Warm-Up <span id="warmupGroupLabel"></span></h2>
-    </div>
-
-    <div class="scroll-container">
+    <div class="view-content scroll-container">
+      <div id="warmupGroupLabel"></div>
       <div id="warmupList" class="scrolling-text"></div>
     </div>
   </div>
 
-  <!-- Message View -->
   <div id="messageView" class="view" style="display:none;">
-    <div class="fixed-header">
-      <h2 id="messageBanner">Announcement</h2>
+    <div class="view-content">
+      <div id="generalMessage"></div>
     </div>
-
-    <div id="generalMessage"></div>
   </div>
 
   <script src="script.js"></script>
