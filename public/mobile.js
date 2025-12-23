@@ -1,32 +1,23 @@
 const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 const ws = new WebSocket(`${protocol}://${window.location.host}`);
 
-const competitionEl = document.getElementById('competitionName');
-const categoryEl = document.getElementById('categoryName');
+fetch('/state')
+  .then(r => r.json())
+  .then(renderFromState)
+  .catch(err => console.error("Initial state fetch failed", err));
 
-const scoreboardView = document.getElementById('scoreboardView');
-const warmupView = document.getElementById('warmupView');
-const messageView = document.getElementById('messageView');
-
-const currentEl = document.getElementById('currentSkater');
-const nextEl = document.getElementById('nextSkater');
-const leaderboardDiv = document.getElementById('leaderboard');
-const warmupGroupLabel = document.getElementById('warmupGroupLabel');
-const warmupList = document.getElementById('warmupList');
-const generalMessage = document.getElementById('generalMessage');
-
-fetch('/state').then(r => r.json()).then(renderFromState).catch(() => {});
+ws.onopen = () => console.log("✅ Mobile WebSocket connected");
 ws.onmessage = e => renderFromState(JSON.parse(e.data));
 
 function hideAllViews() {
-  scoreboardView.style.display = 'none';
-  warmupView.style.display = 'none';
-  messageView.style.display = 'none';
+  document.getElementById('scoreboardView').style.display = 'none';
+  document.getElementById('warmupView').style.display = 'none';
+  document.getElementById('messageView').style.display = 'none';
 }
 
 function renderFromState(data) {
-  competitionEl.textContent = data.competitionName || '';
-  categoryEl.textContent = '';
+  document.getElementById('competitionName').textContent = data.competitionName || '';
+  document.getElementById('categoryName').textContent = '';
 
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
@@ -41,21 +32,21 @@ function renderFromState(data) {
 
 function renderScoreboardView(data) {
   hideAllViews();
-  scoreboardView.style.display = 'block';
+  document.getElementById('scoreboardView').style.display = 'block';
 
   const categoryText = data.categoryName || '';
   document.getElementById('scoreboardBanner').textContent =
     categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
 
-  currentEl.textContent = data.currentSkater
-    ? `Current: ${data.currentSkater.name} (${data.currentSkater.club})`
-    : '';
+  document.getElementById('currentSkater').textContent =
+    data.currentSkater ? `Current: ${data.currentSkater.name} (${data.currentSkater.club})` : '';
 
-  nextEl.textContent = data.nextSkater
-    ? `Next: ${data.nextSkater.name}`
-    : '';
+  document.getElementById('nextSkater').textContent =
+    data.nextSkater ? `Next: ${data.nextSkater.name}` : '';
 
+  const leaderboardDiv = document.getElementById('leaderboard');
   leaderboardDiv.innerHTML = '';
+
   const lb = Array.isArray(data.leaderboard) ? data.leaderboard : [];
   const specials = ['DNF', 'DQ', 'WD'];
 
@@ -75,4 +66,57 @@ function renderScoreboardView(data) {
 
     if (index < 3) {
       const medal = document.createElement('img');
-      if (index === 
+      if (index === 0) medal.src = "/Gold 100x100px.png";
+      if (index === 1) medal.src = "/Silver 100x100px.png";
+      if (index === 2) medal.src = "/Bronze 100x100px.png";
+      medal.alt = "Medal";
+      row.appendChild(medal);
+    } else {
+      const spacer = document.createElement('span');
+      spacer.classList.add('medal-spacer');
+      row.appendChild(spacer);
+    }
+
+    const pos = document.createElement('span');
+    pos.textContent = index + 1;
+    row.appendChild(pos);
+
+    const name = document.createElement('span');
+    name.textContent = player.name;
+    row.appendChild(name);
+
+    const club = document.createElement('span');
+    club.textContent = player.club;
+    row.appendChild(club);
+
+    const score = document.createElement('span');
+    score.textContent = player.score;
+    row.appendChild(score);
+
+    leaderboardDiv.appendChild(row);
+  });
+}
+
+function renderWarmupView(data) {
+  hideAllViews();
+  document.getElementById('warmupView').style.display = 'block';
+
+  document.getElementById('warmupBanner').textContent =
+    "Warm-Up " + (data.warmupGroup || "");
+
+  const warmupList = document.getElementById('warmupList');
+  warmupList.innerHTML = '';
+
+  (data.warmupSkaters || []).forEach(skater => {
+    const row = document.createElement('div');
+    row.textContent = `${skater.order || ''} ${skater.name} (${skater.club})`;
+    warmupList.appendChild(row);
+  });
+}
+
+function renderMessageView(data) {
+  hideAllViews();
+  document.getElementById('messageView').style.display = 'flex';
+  document.getElementById('messageBanner').textContent = "Announcement";
+  document.getElementById('generalMessage').textContent = data.message || '';
+}
