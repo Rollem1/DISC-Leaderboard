@@ -24,6 +24,7 @@ function isMobile() {
 
 function applyDesktopFonts(fonts) {
   if (!fonts) return;
+  // Update desktop set only; CSS chooses active vars
   document.documentElement.style.setProperty('--header-font-desktop', fonts.competition + 'px');
   document.documentElement.style.setProperty('--scoreboard-banner-font-desktop', fonts.scoreboard + 'px');
   document.documentElement.style.setProperty('--warmup-banner-font-desktop', fonts.warmup + 'px');
