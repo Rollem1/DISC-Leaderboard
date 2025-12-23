@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Competition Overlay (Mobile)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="mobile.css">
+</head>
+<body>
+  <!-- Global header -->
+  <div id="header">
+    <h1 id="competitionName">Competition Name</h1>
+    <h2 id="categoryName">Category Name</h2>
+  </div>
+
+  <!-- Scoreboard View -->
+  <div id="scoreboardView" class="view">
+    <div class="fixed-header">
+      <h2 id="scoreboardBanner">Leaderboard</h2>
+    </div>
+
+    <div id="currentNextWrapper">
+      <div id="currentSkater" class="highlight"></div>
+      <div id="nextSkater" class="highlight"></div>
+    </div>
+
+    <div id="leaderboard"></div>
+  </div>
+
+  <!-- Warm-up View -->
+  <div id="warmupView" class="view" style="display:none;">
+    <div class="fixed-header">
+      <h2 id="warmupBanner">Warm-Up <span id="warmupGroupLabel"></span></h2>
+    </div>
+
+    <div class="scroll-container">
+      <div id="warmupList" class="scrolling-text"></div>
+    </div>
+  </div>
+
+  <!-- Message View -->
+  <div id="messageView" class="view" style="display:none;">
+    <div class="fixed-header">
+      <h2 id="messageBanner">Announcement</h2>
+    </div>
+
+    <div id="generalMessage"></div>
+  </div>
+
+  <script src="mobile.js"></script>
+</body>
+</html>

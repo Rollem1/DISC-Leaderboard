@@ -1,0 +1,118 @@
+:root {
+  --header-h: 70px;
+  --banner-h: 60px;
+}
+
+/* Base */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+  background-color: #111;
+  background-image: var(--overlay-bg, none);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  text-align: center;
+}
+
+/* Header */
+#header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: var(--header-h);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 6px;
+}
+#header h1 { margin: 0 0 4px; font-size: 20px; }
+#header h2 { margin: 0; font-size: 16px; }
+
+/* Banner */
+.fixed-header {
+  position: fixed;
+  top: calc(var(--header-h) + 2px);
+  left: 0;
+  width: 100%;
+  height: var(--banner-h);
+  background: rgba(34,34,34,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.fixed-header h2 { margin: 0; font-size: 18px; }
+
+/* Views */
+.view {
+  position: relative;
+  padding-top: calc(var(--header-h) + var(--banner-h) + 15px);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Current/Next */
+#currentNextWrapper {
+  margin: 8px auto;
+  width: 95%;
+  background: rgba(17,17,17,0.85);
+  padding: 8px;
+}
+#currentSkater, #nextSkater {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+/* Leaderboard */
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 30px 1fr 1fr;
+  align-items: center;
+  gap: 6px;
+  margin: 4px auto;
+  padding: 8px;
+  background: rgba(34,34,34,0.9);
+  border-radius: 5px;
+  width: 95%;
+  font-size: 16px;
+}
+.top3 { background: rgba(51,51,51,0.9); }
+.leaderboard-row img { width: 24px; height: 24px; }
+.medal-spacer { width: 24px; }
+
+/* Warm-up */
+.scroll-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: calc(100vh - (var(--header-h) + var(--banner-h) + 30px));
+}
+#warmupList > div {
+  margin: 4px;
+  padding: 8px;
+  background: rgba(34,34,34,0.9);
+  border-radius: 5px;
+  width: 95%;
+  text-align: center;
+  font-size: 16px;
+}
+#warmupList > div:nth-child(even) { background: rgba(51,51,51,0.9); }
+.scrolling-text { display:inline-block; will-change:transform; animation:scroll-up 25s linear infinite; }
+@keyframes scroll-up { 0%{transform:translateY(0);} 100%{transform:translateY(-50%);} }
+
+/* Message */
+#generalMessage {
+  max-width: 90%;
+  background: rgba(34,34,34,0.9);
+  padding: 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  font-size: 18px;
+}
