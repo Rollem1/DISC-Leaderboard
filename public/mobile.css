@@ -9,7 +9,7 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: Arial, sans-serif;
-  background-color: #111;
+  /*background-color: #111;*/
   color: #fff;
   text-align: center;
 }
@@ -88,8 +88,9 @@ body::before {
 
   /* COLUMN WIDTHS (Option B) */
   grid-template-columns:
-    50px   /* medal */
-    100px    /* name */
+    20px   /* medal */
+	25px   /*position */
+    200px    /* name */
     12px    /* club */
     12px;  /* score */
 
