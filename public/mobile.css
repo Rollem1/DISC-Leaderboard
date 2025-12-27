@@ -41,8 +41,8 @@ body::before {
   justify-content: flex-start;
   padding-top: 6px;
 }
-#header h1 { margin: 0 0 4px; font-size: 18px; }
-#header h2 { margin: 0; font-size: 14px; }
+#header h1 { margin: 0 0 4px; font-size: 22px; }
+#header h2 { margin: 0; font-size: 18px; }
 
 /* Banner */
 .fixed-header {
@@ -57,7 +57,7 @@ body::before {
   justify-content: center;
   z-index: 9999;
 }
-.fixed-header h2 { margin: 0; font-size: 16px; }
+.fixed-header h2 { margin: 0; font-size: 18px; }
 
 /* Views */
 .view {
@@ -75,7 +75,7 @@ body::before {
   padding: 8px;
 }
 #currentSkater, #nextSkater {
-  font-size: 14px;
+  font-size: 18px;
   font-weight: bold;
   margin: 4px 0;
 }
@@ -88,10 +88,10 @@ body::before {
 
   /* COLUMN WIDTHS (Option B) */
   grid-template-columns:
-    20px   /* medal */
-    1fr    /* name */
-    1fr    /* club */
-    40px;  /* score */
+    50px   /* medal */
+    1000px    /* name */
+    120px    /* club */
+    120px;  /* score */
 
   align-items: center;
   gap: 4px;
@@ -100,7 +100,7 @@ body::before {
   background: rgba(34,34,34,0.9);
   border-radius: 5px;
   width: 95%;
-  font-size: 12px;
+  font-size: 18px;
 }
 /* --------------------------------------------- */
 
@@ -122,7 +122,7 @@ body::before {
   border-radius: 5px;
   width: 95%;
   text-align: center;
-  font-size: 14px;
+  font-size: 18px;
 }
 #warmupList > div:nth-child(even) { background: rgba(51,51,51,0.9); }
 
@@ -133,5 +133,5 @@ body::before {
   padding: 12px;
   border-radius: 6px;
   margin-top: 15px;
-  font-size: 16px;
+  font-size: 22px;
 }
