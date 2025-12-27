@@ -34,8 +34,9 @@ function renderScoreboardView(data) {
   hideAllViews();
   document.getElementById('scoreboardView').style.display = 'block';
 
+  const categoryText = data.categoryName || '';
   document.getElementById('scoreboardBanner').textContent =
-    (data.categoryName ? data.categoryName + " " : "") + "Leaderboard";
+    categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
 
   document.getElementById('currentSkater').textContent =
     data.currentSkater ? `Current: ${data.currentSkater.name} (${data.currentSkater.club})` : '';
@@ -100,8 +101,10 @@ function renderWarmupView(data) {
   hideAllViews();
   document.getElementById('warmupView').style.display = 'block';
 
+  const categoryText = data.categoryName || "";
+  const groupText = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : " Warmup";
   document.getElementById('warmupBanner').textContent =
-    "Warm-Up " + (data.warmupGroup || "");
+    categoryText ? `${categoryText}${groupText}` : `Warmup ${data.warmupGroup || ""}`;
 
   const warmupList = document.getElementById('warmupList');
   warmupList.innerHTML = '';
