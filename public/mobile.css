@@ -9,19 +9,19 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: Arial, sans-serif;
-  /*background-color: #111;*/
   color: #fff;
   text-align: center;
 }
 
 /* FIXED BACKGROUND (iOS-safe) */
+/* Default background image applied here */
 body::before {
   content: "";
   position: fixed;
   top: 0; left: 0;
   width: 100%;
   height: 100%;
-  background-image: var(--overlay-bg, none);
+  background-image: var(--overlay-bg, url("/backgrounds/1766157551695_1766156176583_Disc_IJS_Background_1_.png"));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -41,8 +41,8 @@ body::before {
   justify-content: flex-start;
   padding-top: 6px;
 }
-#header h1 { margin: 0 0 4px; font-size: 19px; }
-#header h2 { margin: 0; font-size: 18px; }
+#header h1 { margin: 0 0 4px; font-size: 18px; }
+#header h2 { margin: 0; font-size: 16px; }
 
 /* Banner */
 .fixed-header {
@@ -57,7 +57,7 @@ body::before {
   justify-content: center;
   z-index: 9999;
 }
-.fixed-header h2 { margin: 0; font-size: 18px; }
+.fixed-header h2 { margin: 0; font-size: 16px; }
 
 /* Views */
 .view {
@@ -65,17 +65,18 @@ body::before {
   padding-top: calc(var(--header-h) + var(--banner-h) + 15px);
   min-height: 100vh;
   box-sizing: border-box;
+  background: transparent !important; /* ensure no black layer */
 }
 
 /* Current/Next */
 #currentNextWrapper {
   margin: 8px auto;
   width: 95%;
-  background: rgba(17,17,17,0.85);
+  background: rgba(17,17,17,0.55); /* softened transparency */
   padding: 8px;
 }
 #currentSkater, #nextSkater {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: bold;
   margin: 4px 0;
 }
@@ -86,26 +87,26 @@ body::before {
 .leaderboard-row {
   display: grid;
 
-  /* COLUMN WIDTHS (Option B) */
+  /* Your custom column widths */
   grid-template-columns:
     20px   /* medal */
-	25px   /*position */
-    200px    /* name */
-    12px    /* club */
-    12px;  /* score */
+    25px   /* position */
+    210px  /* name */
+    16px   /* club */
+    90px;  /* score */
 
   align-items: center;
   gap: 4px;
   margin: 4px auto;
   padding: 6px;
-  background: rgba(34,34,34,0.9);
+  background: rgba(34,34,34,0.55); /* softened transparency */
   border-radius: 5px;
   width: 95%;
-  font-size: 18px;
+  font-size: 13px;
 }
 /* --------------------------------------------- */
 
-.top3 { background: rgba(51,51,51,0.9); }
+.top3 { background: rgba(51,51,51,0.55); }
 .leaderboard-row img { width: 20px; height: 20px; }
 .medal-spacer { width: 20px; }
 
@@ -115,22 +116,26 @@ body::before {
   width: 100%;
   overflow: visible;
   height: auto;
+  background: transparent !important;
 }
+
 #warmupList > div {
   margin: 6px;
   padding: 8px;
-  background: rgba(34,34,34,0.9);
+  background: rgba(34,34,34,0.55); /* softened transparency */
   border-radius: 5px;
   width: 95%;
   text-align: center;
   font-size: 18px;
 }
-#warmupList > div:nth-child(even) { background: rgba(51,51,51,0.9); }
+#warmupList > div:nth-child(even) {
+  background: rgba(51,51,51,0.55);
+}
 
 /* Message */
 #generalMessage {
   max-width: 95%;
-  background: rgba(34,34,34,0.9);
+  background: rgba(34,34,34,0.55); /* softened transparency */
   padding: 12px;
   border-radius: 6px;
   margin-top: 15px;
