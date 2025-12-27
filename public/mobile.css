@@ -41,7 +41,7 @@ body::before {
   justify-content: flex-start;
   padding-top: 6px;
 }
-#header h1 { margin: 0 0 4px; font-size: 22px; }
+#header h1 { margin: 0 0 4px; font-size: 19px; }
 #header h2 { margin: 0; font-size: 18px; }
 
 /* Banner */
@@ -89,9 +89,9 @@ body::before {
   /* COLUMN WIDTHS (Option B) */
   grid-template-columns:
     50px   /* medal */
-    1000px    /* name */
-    120px    /* club */
-    120px;  /* score */
+    100px    /* name */
+    12px    /* club */
+    12px;  /* score */
 
   align-items: center;
   gap: 4px;
@@ -133,5 +133,5 @@ body::before {
   padding: 12px;
   border-radius: 6px;
   margin-top: 15px;
-  font-size: 22px;
+  font-size: 19px;
 }
