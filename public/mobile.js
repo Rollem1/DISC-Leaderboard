@@ -41,8 +41,20 @@ function renderScoreboardView(data) {
   document.getElementById('currentSkater').textContent =
     data.currentSkater ? `Current: ${data.currentSkater.name} (${data.currentSkater.club})` : '';
 
-  document.getElementById('nextSkater').textContent =
-    data.nextSkater ? `Next: ${data.nextSkater.name}` : '';
+  /* Remaining skaters logic (same as desktop) */
+  if (data.nextSkater) {
+    const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
+      .filter(p => p.score == null);
+
+    const remainingCount = data.currentSkater
+      ? remaining.filter(p => p.name !== data.currentSkater.name).length
+      : remaining.length;
+
+    document.getElementById('nextSkater').textContent =
+      `${remainingCount} skaters to skate – Next: ${data.nextSkater.name}`;
+  } else {
+    document.getElementById('nextSkater').textContent = '';
+  }
 
   const leaderboardDiv = document.getElementById('leaderboard');
   leaderboardDiv.innerHTML = '';
@@ -101,6 +113,7 @@ function renderWarmupView(data) {
   hideAllViews();
   document.getElementById('warmupView').style.display = 'block';
 
+  /* Category + Warmup group (same as desktop) */
   const categoryText = data.categoryName || "";
   const groupText = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : " Warmup";
   document.getElementById('warmupBanner').textContent =
