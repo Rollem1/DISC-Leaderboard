@@ -34,9 +34,8 @@ function renderScoreboardView(data) {
   hideAllViews();
   document.getElementById('scoreboardView').style.display = 'block';
 
-  const categoryText = data.categoryName || '';
   document.getElementById('scoreboardBanner').textContent =
-    categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
+    (data.categoryName ? data.categoryName + " " : "") + "Leaderboard";
 
   document.getElementById('currentSkater').textContent =
     data.currentSkater ? `Current: ${data.currentSkater.name} (${data.currentSkater.club})` : '';

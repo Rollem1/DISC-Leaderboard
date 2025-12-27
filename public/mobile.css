@@ -1,6 +1,6 @@
 :root {
-  --header-h: 70px;
-  --banner-h: 60px;
+  --header-h: 50px;
+  --banner-h: 45px;
 }
 
 /* Base */
@@ -31,8 +31,8 @@ html, body {
   justify-content: flex-start;
   padding-top: 6px;
 }
-#header h1 { margin: 0 0 4px; font-size: 20px; }
-#header h2 { margin: 0; font-size: 16px; }
+#header h1 { margin: 0 0 4px; font-size: 18px; }
+#header h2 { margin: 0; font-size: 14px; }
 
 /* Banner */
 .fixed-header {
@@ -47,7 +47,7 @@ html, body {
   justify-content: center;
   z-index: 9999;
 }
-.fixed-header h2 { margin: 0; font-size: 18px; }
+.fixed-header h2 { margin: 0; font-size: 16px; }
 
 /* Views */
 .view {
@@ -65,7 +65,7 @@ html, body {
   padding: 8px;
 }
 #currentSkater, #nextSkater {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
   margin: 4px 0;
 }
@@ -73,7 +73,7 @@ html, body {
 /* Leaderboard */
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 30px 1fr 1fr;
+  grid-template-columns: 24px 1fr 50px;
   align-items: center;
   gap: 6px;
   margin: 4px auto;
@@ -81,7 +81,7 @@ html, body {
   background: rgba(34,34,34,0.9);
   border-radius: 5px;
   width: 95%;
-  font-size: 16px;
+  font-size: 14px;
 }
 .top3 { background: rgba(51,51,51,0.9); }
 .leaderboard-row img { width: 24px; height: 24px; }
@@ -91,28 +91,26 @@ html, body {
 .scroll-container {
   position: relative;
   width: 100%;
-  overflow: hidden;
-  height: calc(100vh - (var(--header-h) + var(--banner-h) + 30px));
+  overflow: visible;   /* allow natural page scroll */
+  height: auto;
 }
 #warmupList > div {
-  margin: 4px;
+  margin: 6px;
   padding: 8px;
   background: rgba(34,34,34,0.9);
   border-radius: 5px;
   width: 95%;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
 }
 #warmupList > div:nth-child(even) { background: rgba(51,51,51,0.9); }
-.scrolling-text { display:inline-block; will-change:transform; animation:scroll-up 25s linear infinite; }
-@keyframes scroll-up { 0%{transform:translateY(0);} 100%{transform:translateY(-50%);} }
 
 /* Message */
 #generalMessage {
-  max-width: 90%;
+  max-width: 95%;
   background: rgba(34,34,34,0.9);
-  padding: 15px;
+  padding: 12px;
   border-radius: 6px;
   margin-top: 15px;
-  font-size: 18px;
+  font-size: 16px;
 }
