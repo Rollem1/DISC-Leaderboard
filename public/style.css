@@ -76,6 +76,7 @@ body {
 #scrollWrapper {
   position: relative;
   width: 100%;
+  height: calc(100vh - 450px);
   overflow: hidden;
 }
 
@@ -113,4 +114,10 @@ body {
   background: rgba(34,34,34,0.55);
   border-radius: 6px;
   font-size: 54px;
+}
+
+/* Warmup scroll animation */
+@keyframes scroll-up {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
 }

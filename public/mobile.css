@@ -96,3 +96,9 @@ body {
   border-radius: 5px;
   font-size: 24px;
 }
+
+/* Warmup scroll animation */
+@keyframes scroll-up {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}

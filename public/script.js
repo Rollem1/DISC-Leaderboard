@@ -81,7 +81,12 @@ function renderScoreboard(data) {
 
   const fs = data.fontSizes.table;
 
-  data.leaderboard.forEach((p, i) => {
+  // Only scored skaters, sorted
+  const scored = data.leaderboard
+    .filter(p => p.score != null && p.score !== "")
+    .sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
+
+  scored.forEach((p, i) => {
     const row = document.createElement('div');
     row.className = 'leaderboard-row';
     row.style.fontSize = fs + 'px';
@@ -93,7 +98,7 @@ function renderScoreboard(data) {
       <span>${i + 1}</span>
       <span>${p.name}</span>
       <span>${p.club}</span>
-      <span>${p.score ?? ''}</span>
+      <span>${p.score}</span>
     `;
 
     if (i < 3) leaderboardDiv.appendChild(row);
