@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Admin Panel</title>
   <link rel="stylesheet" href="style.css">
+
   <style>
     .admin-input { padding: 8px 12px; font-size: 16px; border-radius: 4px; border: 1px solid #555; background: #111; color: #fff; }
     .admin-button { padding: 8px 16px; font-size: 16px; background: #0ff; color: #000; border: none; border-radius: 4px; cursor: pointer; }
@@ -32,6 +33,7 @@
     .popup label { display:block; margin:8px 0; }
   </style>
 </head>
+
 <body>
   <h1>Admin Panel</h1>
 
@@ -82,34 +84,41 @@
 
   <div id="fontPopup" class="popup">
     <h2>Font Size Settings</h2>
+
     <label>Competition Heading Font Size:
       <input type="number" id="competitionFont" class="admin-input" value="54"> px
     </label>
-    <label>Category Heading Font Size:
-      <input type="number" id="categoryFont" class="admin-input" value="54"> px
-    </label>
+
     <label>Table Font Size:
       <input type="number" id="tableFont" class="admin-input" value="54"> px
     </label>
+
     <label>Scoreboard Banner Font Size:
       <input type="number" id="scoreboardFont" class="admin-input" value="54"> px
     </label>
+
     <label>Warm-Up Banner Font Size:
       <input type="number" id="warmupFont" class="admin-input" value="54"> px
     </label>
+
     <label>Message Banner/Box Font Size:
       <input type="number" id="messageFont" class="admin-input" value="54"> px
     </label>
+
     <label>Current/Next Skater Font Size:
       <input type="number" id="currentNextFont" class="admin-input" value="54"> px
     </label>
-    <button class="admin-button" onclick="applyFontSettings()">Apply</button>
-    <button class="admin-button" onclick="closeFontPopup()">Close</button>
+
+    <button class="admin-button" onclick="saveAndCloseFontPopup()">Close</button>
   </div>
 
   <p id="status"></p>
 
   <script>
+    // -------------------------
+    // BASIC CONFIG
+    // -------------------------
+
     document.getElementById('configForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const competitionName = document.getElementById('competition').value;
@@ -124,6 +133,10 @@
         document.getElementById('status').textContent = 'Error updating competition: ' + err.message;
       }
     });
+
+    // -------------------------
+    // CSV UPLOAD
+    // -------------------------
 
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -187,6 +200,10 @@
       }
     }
 
+    // -------------------------
+    // VIEW MODE
+    // -------------------------
+
     async function setViewMode(mode) {
       try {
         await fetch('/setViewMode', {
@@ -199,6 +216,10 @@
         document.getElementById('status').textContent = 'Error setting view mode: ' + err.message;
       }
     }
+
+    // -------------------------
+    // WARMUP GROUP
+    // -------------------------
 
     async function setWarmupGroup() {
       const group = document.getElementById('warmupSelect').value;
@@ -215,6 +236,10 @@
       }
     }
 
+    // -------------------------
+    // MESSAGE
+    // -------------------------
+
     async function updateMessage() {
       const message = document.getElementById('messageText').value;
       try {
@@ -230,38 +255,49 @@
       }
     }
 
+    // -------------------------
+    // FONT POPUP
+    // -------------------------
+
     function openFontPopup() {
       document.getElementById('fontPopup').style.display = 'block';
     }
+
     function closeFontPopup() {
       document.getElementById('fontPopup').style.display = 'none';
     }
 
     async function applyFontSettings() {
       const competitionFont = document.getElementById('competitionFont').value;
-      const categoryFont = document.getElementById('categoryFont').value;
       const tableFont = document.getElementById('tableFont').value;
       const scoreboardFont = document.getElementById('scoreboardFont').value;
       const warmupFont = document.getElementById('warmupFont').value;
       const messageFont = document.getElementById('messageFont').value;
       const currentNextFont = document.getElementById('currentNextFont').value;
 
-      try {
-        await fetch('/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            competitionFont, categoryFont, tableFont,
-            scoreboardFont, warmupFont, messageFont,
-            currentNextFont
-          })
-        });
-        document.getElementById('status').textContent = 'Font sizes updated!';
-        closeFontPopup();
-      } catch (err) {
-        document.getElementById('status').textContent = 'Error updating font sizes: ' + err.message;
-      }
+      await fetch('/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          competitionFont,
+          tableFont,
+          scoreboardFont,
+          warmupFont,
+          messageFont,
+          currentNextFont
+        })
+      });
     }
+
+    async function saveAndCloseFontPopup() {
+      await applyFontSettings();
+      closeFontPopup();
+      document.getElementById('status').textContent = 'Font sizes updated!';
+    }
+
+    // -------------------------
+    // BACKGROUND
+    // -------------------------
 
     document.getElementById('bgForm').addEventListener('submit', async e => {
       e.preventDefault();
@@ -284,13 +320,17 @@
       }
     });
 
+    // -------------------------
+    // INITIAL LOAD BEHAVIOUR
+    // -------------------------
+
     window.addEventListener('DOMContentLoaded', async () => {
-      const state = await fetch('/state').then(r => r.json());
-
-      if (!state.fontSizes) {
+      // Send default font sizes immediately on load
+      setTimeout(() => {
         applyFontSettings();
-      }
+      }, 300);
 
+      // Warmup group default
       const select = document.getElementById('warmupSelect');
       if (select) {
         select.value = "1";
