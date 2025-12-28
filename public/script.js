@@ -23,6 +23,17 @@ const scoreboardBanner = document.getElementById('scoreboardBanner');
 const warmupBanner = document.getElementById('warmupBanner');
 const messageBanner = document.getElementById('messageBanner');
 
+//
+// ✅ APPLY DESKTOP DEFAULT FONT SIZES ON FIRST LOAD
+//
+if (competitionEl) competitionEl.style.fontSize = '32px';
+if (scoreboardBanner) scoreboardBanner.style.fontSize = '26px';
+if (warmupBanner) warmupBanner.style.fontSize = '26px';
+if (messageBanner) messageBanner.style.fontSize = '26px';
+if (generalMessage) generalMessage.style.fontSize = '26px';
+if (currentEl) currentEl.style.fontSize = '22px';
+if (nextEl) nextEl.style.fontSize = '22px';
+
 // Initial state fetch + live updates
 fetch('/state').then(r => r.json()).then(renderFromState).catch(() => {});
 ws.onopen = () => console.log("✅ WebSocket connected");
@@ -45,59 +56,52 @@ function positionScrollWrapper() {
 }
 
 function renderFromState(data) {
-  // Competition name always visible
+  // Competition name always visible (category no longer displayed here)
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
   if (categoryEl) categoryEl.textContent = '';
 
-  // Background image
+  // ✅ Background image (CSS variable consumed by CSS)
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
   } else {
-    document.body.style.removeProperty('--overlay-bg');
+    document.body.style.removeProperty('--overlay-bg'); // allow CSS fallback
   }
 
-  // -------------------------------------------------------
-  // ✅ DEFAULT FONT SIZES (APPLY ON FIRST LOAD)
-  // -------------------------------------------------------
-  const defaults = {
-    competition: 54,
-    scoreboard: 54,
-    warmup: 54,
-    message: 54,
-    currentNext: 54,
-    table: 54
-  };
+  //
+  // ✅ Apply font sizes from state IF present (overrides defaults above)
+  //
+  if (data.fontSizes) {
+    if (competitionEl && data.fontSizes.competition != null)
+      competitionEl.style.fontSize = data.fontSizes.competition + 'px';
 
-  const fs = data.fontSizes || {};
+    if (scoreboardBanner && data.fontSizes.scoreboard != null)
+      scoreboardBanner.style.fontSize = data.fontSizes.scoreboard + 'px';
 
-  if (competitionEl)
-    competitionEl.style.fontSize = (fs.competition || defaults.competition) + 'px';
+    if (warmupBanner && data.fontSizes.warmup != null)
+      warmupBanner.style.fontSize = data.fontSizes.warmup + 'px';
 
-  if (scoreboardBanner)
-    scoreboardBanner.style.fontSize = (fs.scoreboard || defaults.scoreboard) + 'px';
+    if (messageBanner && data.fontSizes.message != null)
+      messageBanner.style.fontSize = data.fontSizes.message + 'px';
 
-  if (warmupBanner)
-    warmupBanner.style.fontSize = (fs.warmup || defaults.warmup) + 'px';
+    if (generalMessage && data.fontSizes.message != null)
+      generalMessage.style.fontSize = data.fontSizes.message + 'px';
 
-  if (messageBanner)
-    messageBanner.style.fontSize = (fs.message || defaults.message) + 'px';
+    if (currentEl && data.fontSizes.currentNext != null)
+      currentEl.style.fontSize = data.fontSizes.currentNext + 'px';
 
-  if (generalMessage)
-    generalMessage.style.fontSize = (fs.message || defaults.message) + 'px';
+    if (nextEl && data.fontSizes.currentNext != null)
+      nextEl.style.fontSize = data.fontSizes.currentNext + 'px';
 
-  if (currentEl)
-    currentEl.style.fontSize = (fs.currentNext || defaults.currentNext) + 'px';
-
-  if (nextEl)
-    nextEl.style.fontSize = (fs.currentNext || defaults.currentNext) + 'px';
-
-  // Already-rendered rows
-  document.querySelectorAll('.leaderboard-row').forEach(row => {
-    row.style.fontSize = (fs.table || defaults.table) + 'px';
-  });
-  document.querySelectorAll('#warmupList > div').forEach(row => {
-    row.style.fontSize = (fs.table || defaults.table) + 'px';
-  });
+    // Safeguard for any already-rendered rows
+    if (data.fontSizes.table != null) {
+      document.querySelectorAll('.leaderboard-row').forEach(row => {
+        row.style.fontSize = data.fontSizes.table + 'px';
+      });
+      document.querySelectorAll('#warmupList > div').forEach(row => {
+        row.style.fontSize = data.fontSizes.table + 'px';
+      });
+    }
+  }
 
   // Route to the correct view
   if (data.viewMode === 'scoreboard') {
@@ -113,11 +117,13 @@ function renderScoreboardView(data) {
   hideAllViews();
   scoreboardView.style.display = 'block';
 
+  // Banner: Category + " Leaderboard"
   if (scoreboardBanner) {
     const categoryText = data.categoryName || data.category || '';
     scoreboardBanner.textContent = categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
   }
 
+  // Current / Next
   currentEl.textContent = data.currentSkater
     ? `Current Skater: ${data.currentSkater.name} (${data.currentSkater.club})`
     : '';
@@ -133,6 +139,7 @@ function renderScoreboardView(data) {
     nextEl.textContent = '';
   }
 
+  // Build leaderboard
   leaderboardDiv.innerHTML = '';
   scrollingDiv.innerHTML = '';
 
@@ -153,9 +160,10 @@ function renderScoreboardView(data) {
     row.classList.add('leaderboard-row');
     if (index < 3) row.classList.add('top3');
 
-    // Apply table font size immediately
-    const fs = data.fontSizes || {};
-    row.style.fontSize = (fs.table || 18) + 'px';
+    // Table font size applied immediately if available
+    if (data.fontSizes && data.fontSizes.table != null) {
+      row.style.fontSize = data.fontSizes.table + 'px';
+    }
 
     if (index < 3) {
       const medal = document.createElement('img');
@@ -194,6 +202,7 @@ function renderScoreboardView(data) {
     else scrollingDiv.appendChild(row);
   });
 
+  // Scrolling animation decision
   requestAnimationFrame(() => {
     positionScrollWrapper();
     const contentHeight = scrollingDiv.scrollHeight;
@@ -208,33 +217,41 @@ function renderWarmupView(data) {
   hideAllViews();
   warmupView.style.display = 'block';
 
+  // Banner: Category + " Warmup {Group}"
   if (warmupBanner) {
     const categoryText = data.categoryName || data.category || '';
     const groupPart = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : ' Warmup';
     warmupBanner.textContent = categoryText ? `${categoryText}${groupPart}` : `Warmup${data.warmupGroup ? ' ' + data.warmupGroup : ''}`;
   }
 
+  // Optional label under banner
   warmupGroupLabel.textContent = data.warmupGroup ? `Group ${data.warmupGroup}` : '';
 
   warmupList.innerHTML = '';
   warmupList.dataset.scrolled = '';
 
   const list = Array.isArray(data.warmupSkaters) ? data.warmupSkaters : [];
-  const fs = data.fontSizes || {};
 
   if (list.length > 0) {
     list.forEach(skater => {
       const row = document.createElement('div');
       const order = skater.order != null ? `${skater.order}. ` : '';
       row.textContent = `${order}${skater.name} (${skater.club})`;
-      row.style.fontSize = (fs.table || 18) + 'px';
+
+      // Table font size for warm-up rows
+      if (data.fontSizes && data.fontSizes.table != null) {
+        row.style.fontSize = data.fontSizes.table + 'px';
+      }
+
       warmupList.appendChild(row);
     });
     adjustScrollSpeed();
   } else {
     const row = document.createElement('div');
     row.textContent = 'No skaters in this group';
-    row.style.fontSize = (fs.table || 18) + 'px';
+    if (data.fontSizes && data.fontSizes.table != null) {
+      row.style.fontSize = data.fontSizes.table + 'px';
+    }
     warmupList.appendChild(row);
   }
 }
@@ -254,6 +271,7 @@ function adjustScrollSpeed() {
     warmupList.dataset.scrolled = true;
   }
 
+  // Rough linear mapping (px/s ~ 50)
   const duration = (textHeight * 2) / 50;
   warmupList.style.animation = `scroll-up ${duration}s linear infinite`;
 }
@@ -262,11 +280,15 @@ function renderMessageView(data) {
   hideAllViews();
   messageView.style.display = 'flex';
 
+  // Competition name at top; message banner under it
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
-  if (messageBanner) messageBanner.textContent = 'Announcement';
+  if (messageBanner) {
+    messageBanner.textContent = 'Announcement';
+  }
 
   generalMessage.textContent = data.message || 'No message set';
 }
 
+// Reposition on load/resize for scoreboard scroll wrapper
 window.addEventListener('load', positionScrollWrapper);
 window.addEventListener('resize', positionScrollWrapper);
