@@ -47,14 +47,15 @@
     <input type="file" id="file" name="file" accept=".csv" required class="admin-input">
     <button type="submit" class="admin-button">Upload</button>
   </form>
-  
-	<h3>Background Image</h3>
-	<form id="bgForm" enctype="multipart/form-data">
-	  <input type="file" name="file" accept="image/*">
-	  <button type="submit">Upload Background</button>
-	</form>
-	
-<button id="clearBg">Clear Background</button>
+
+  <h3>Background Image</h3>
+  <form id="bgForm" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/*">
+    <button type="submit">Upload Background</button>
+  </form>
+
+  <button id="clearBg">Clear Background</button>
+
   <h2>View Mode</h2>
   <button class="admin-button" onclick="setViewMode('scoreboard')">Show Scoreboard</button>
   <button class="admin-button" onclick="setViewMode('warmup')">Show Warm-Up</button>
@@ -83,27 +84,33 @@
   <!-- Popup -->
   <div id="fontPopup" class="popup">
     <h2>Font Size Settings</h2>
+
     <label>Competition Heading Font Size:
       <input type="number" id="competitionFont" class="admin-input" value="54"> px
     </label>
-    <label>Category Heading Font Size:
-      <input type="number" id="categoryFont" class="admin-input" value="54"> px
-    </label>
+
+    <!-- Category font removed -->
+
     <label>Table Font Size:
       <input type="number" id="tableFont" class="admin-input" value="54"> px
     </label>
+
     <label>Scoreboard Banner Font Size:
       <input type="number" id="scoreboardFont" class="admin-input" value="54"> px
     </label>
+
     <label>Warm-Up Banner Font Size:
       <input type="number" id="warmupFont" class="admin-input" value="54"> px
     </label>
+
     <label>Message Banner/Box Font Size:
       <input type="number" id="messageFont" class="admin-input" value="54"> px
     </label>
+
     <label>Current/Next Skater Font Size:
       <input type="number" id="currentNextFont" class="admin-input" value="54"> px
     </label>
+
     <button class="admin-button" onclick="applyFontSettings()">Apply</button>
     <button class="admin-button" onclick="closeFontPopup()">Close</button>
   </div>
@@ -160,7 +167,7 @@
       }
     });
 
-    // Render skaters with per-row update
+    // Render skaters
     function renderSkaters(skaters) {
       const container = document.getElementById('skaterList');
       container.innerHTML = '';
@@ -191,6 +198,7 @@
         document.getElementById('status').textContent = 'Error updating score: ' + err.message;
       }
     }
+
     // View mode
     async function setViewMode(mode) {
       try {
@@ -205,6 +213,7 @@
       }
     }
 
+    // Warm-up group
     async function setWarmupGroup() {
       const group = document.getElementById('warmupSelect').value;
       try {
@@ -220,6 +229,7 @@
       }
     }
 
+    // Message update
     async function updateMessage() {
       const message = document.getElementById('messageText').value;
       try {
@@ -235,6 +245,7 @@
       }
     }
 
+    // Popup controls
     function openFontPopup() {
       document.getElementById('fontPopup').style.display = 'block';
     }
@@ -242,9 +253,9 @@
       document.getElementById('fontPopup').style.display = 'none';
     }
 
+    // Apply font settings (category removed)
     async function applyFontSettings() {
       const competitionFont = document.getElementById('competitionFont').value;
-      const categoryFont = document.getElementById('categoryFont').value;
       const tableFont = document.getElementById('tableFont').value;
       const scoreboardFont = document.getElementById('scoreboardFont').value;
       const warmupFont = document.getElementById('warmupFont').value;
@@ -256,8 +267,11 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            competitionFont, categoryFont, tableFont,
-            scoreboardFont, warmupFont, messageFont,
+            competitionFont,
+            tableFont,
+            scoreboardFont,
+            warmupFont,
+            messageFont,
             currentNextFont
           })
         });
@@ -267,31 +281,32 @@
         document.getElementById('status').textContent = 'Error updating font sizes: ' + err.message;
       }
     }
-	
-// Background image upload
-document.getElementById('bgForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  try {
-    const res = await fetch('/uploadBackground', { method: 'POST', body: formData });
-    if (!res.ok) throw new Error('Upload failed');
-    const data = await res.json();
-    document.getElementById('status').textContent = `Background updated!`;
-  } catch (err) {
-    document.getElementById('status').textContent = 'Background upload error: ' + err.message;
-  }
-});
 
-// Clear background
-document.getElementById('clearBg').addEventListener('click', async () => {
-  try {
-    await fetch('/clearBackground', { method: 'POST' });
-    document.getElementById('status').textContent = 'Background cleared!';
-  } catch (err) {
-    document.getElementById('status').textContent = 'Error clearing background: ' + err.message;
-  }
-});
-    // Default warm-up group on page load
+    // Background image upload
+    document.getElementById('bgForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      try {
+        const res = await fetch('/uploadBackground', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Upload failed');
+        await res.json();
+        document.getElementById('status').textContent = `Background updated!`;
+      } catch (err) {
+        document.getElementById('status').textContent = 'Background upload error: ' + err.message;
+      }
+    });
+
+    // Clear background
+    document.getElementById('clearBg').addEventListener('click', async () => {
+      try {
+        await fetch('/clearBackground', { method: 'POST' });
+        document.getElementById('status').textContent = 'Background cleared!';
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error clearing background: ' + err.message;
+      }
+    });
+
+    // Default warm-up group on load
     window.addEventListener('DOMContentLoaded', () => {
       const select = document.getElementById('warmupSelect');
       if (select) {

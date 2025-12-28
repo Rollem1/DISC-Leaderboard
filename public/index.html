@@ -1,56 +1,101 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title>Competition Overlay</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <!-- Global header -->
-  <div id="header">
-    <!-- These IDs must exist for script.js to update them -->
-    <h1 id="competitionName">Competition Name</h1>
-    <h2 id="categoryName">Category Name</h2>
-  </div>
+body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
 
-  <!-- Scoreboard View -->
-  <div id="scoreboardView" class="view">
-    <div class="fixed-header">
-      <h2 id="scoreboardBanner">Leader Board</h2>
-    </div>
+/* NEW TWO-LINE TOP BANNER */
+#topBanner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(34,34,34,0.85);
+  padding: 10px 0;
+  text-align: center;
+  z-index: 9999;
+}
 
-    <div id="currentNextWrapper">
-      <div id="currentSkater" class="highlight"></div>
-      <div id="nextSkater" class="highlight"></div>
-    </div>
+#bannerLine1 {
+  font-size: 54px;
+  font-weight: bold;
+  line-height: 1.1;
+}
 
-    <div id="leaderboard"></div>
+#bannerLine2 {
+  font-size: 54px;
+  line-height: 1.1;
+}
 
-    <div id="scrollWrapper" class="scroll-wrapper">
-      <div id="scrollingList" class="scrolling"></div>
-    </div>
-  </div>
+/* Views */
+.view {
+  padding-top: 150px; /* space for two-line banner */
+  width: 100%;
+  text-align: center;
+}
 
-  <!-- Warm-up View -->
-  <div id="warmupView" class="view" style="display:none;">
-    <div class="fixed-header">
-      <h2 id="warmupBanner">Warm-Up <span id="warmupGroupLabel"></span></h2>
-    </div>
+/* Current / Next */
+#currentSkater,
+#nextSkater {
+  font-size: 54px;
+  margin: 10px 0;
+}
 
-    <div class="scroll-container">
-      <div id="warmupList" class="scrolling-text"></div>
-    </div>
-  </div>
+/* Leaderboard */
+#leaderboard {
+  width: 90%;
+  margin: 0 auto;
+}
 
-  <!-- Message View -->
-  <div id="messageView" class="view" style="display:none;">
-    <div class="fixed-header">
-      <h2 id="messageBanner">Announcement</h2>
-    </div>
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 0.4fr 0.6fr 2.5fr 0.5fr 1fr;
+  gap: 10px;
+  padding: 10px;
+  margin: 6px 0;
+  background: rgba(34,34,34,0.55);
+  border-radius: 6px;
+  font-size: 54px;
+}
 
-    <div id="generalMessage"></div>
-  </div>
+.top3 {
+  background: rgba(51,51,51,0.55);
+}
 
-  <script src="script.js"></script>
-</body>
-</html>
+.medal-spacer {
+  width: 40px;
+}
+
+/* Scrolling list */
+#scrollWrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+#scrollingList {
+  position: absolute;
+  width: 100%;
+}
+
+/* Warmup */
+.scroll-container > div {
+  padding: 10px;
+  margin: 6px auto;
+  width: 90%;
+  background: rgba(34,34,34,0.55);
+  border-radius: 6px;
+  font-size: 54px;
+}
+
+/* Message */
+#generalMessage {
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px;
+  background: rgba(34,34,34,0.55);
+  border-radius: 6px;
+  font-size: 54px;
+}
