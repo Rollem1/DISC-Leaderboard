@@ -1,12 +1,20 @@
-/* Lock overlay only */
+/* ============================
+   OVERLAY ROOT (fixed canvas)
+   ============================ */
 #overlayRoot {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
 }
 
-/* Background */
+/* ============================
+   BACKGROUND IMAGE
+   ============================ */
 body {
   margin: 0;
   padding: 0;
@@ -19,9 +27,11 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* Two-line banner */
+/* ============================
+   TWO-LINE TOP BANNER
+   ============================ */
 #topBanner {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 1920px;
@@ -42,26 +52,33 @@ body {
   line-height: 1.1;
 }
 
-/* Views */
+/* ============================
+   VIEW CONTAINERS
+   ============================ */
 .view {
   padding-top: 150px;
   width: 100%;
   text-align: center;
 }
 
-/* Current / Next */
+/* ============================
+   CURRENT / NEXT SKATER
+   ============================ */
 #currentSkater,
 #nextSkater {
   font-size: 54px;
   margin: 10px 0;
 }
 
-/* Leaderboard */
+/* ============================
+   LEADERBOARD
+   ============================ */
 #leaderboard {
   width: 90%;
   margin: 0 auto;
 }
 
+/* Shared row styling */
 .leaderboard-row {
   display: grid;
   grid-template-columns: 0.3fr 0.4fr 2.5fr 0.5fr 1fr;
@@ -74,26 +91,30 @@ body {
   font-size: 54px;
 }
 
+/* Top 3 rows */
 .top3 {
   background: rgba(51,51,51,0.55);
 }
 
-/* Medal icons scaled */
+/* Medal icons scaled to row height */
 .leaderboard-row img {
   height: 0.8em;
   width: auto;
   object-fit: contain;
 }
 
+/* Spacer for non-medal rows */
 .medal-spacer {
   width: 40px;
 }
 
-/* Leaderboard scroll area */
+/* ============================
+   SCROLLING LIST (rows 4+)
+   ============================ */
 #scrollWrapper {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 500px; /* fixed height for scrolling area */
   overflow: hidden;
 }
 
@@ -102,7 +123,16 @@ body {
   width: 100%;
 }
 
-/* Warmup */
+/* Force rows 4+ to match width of top 3 */
+#scrollingList .leaderboard-row {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================
+   WARMUP LIST
+   ============================ */
 .scroll-container {
   position: relative;
   overflow: hidden;
@@ -123,7 +153,9 @@ body {
   font-size: 54px;
 }
 
-/* Message */
+/* ============================
+   MESSAGE VIEW
+   ============================ */
 #generalMessage {
   width: 90%;
   margin: 0 auto;
@@ -133,7 +165,9 @@ body {
   font-size: 54px;
 }
 
-/* Scroll animation */
+/* ============================
+   SCROLL ANIMATION
+   ============================ */
 @keyframes scroll-up {
   0%   { transform: translateY(0); }
   100% { transform: translateY(-50%); }
