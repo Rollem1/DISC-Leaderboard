@@ -26,13 +26,13 @@ const messageBanner = document.getElementById('messageBanner');
 //
 // ✅ APPLY DESKTOP DEFAULT FONT SIZES ON FIRST LOAD
 //
-if (competitionEl) competitionEl.style.fontSize = '32px';
-if (scoreboardBanner) scoreboardBanner.style.fontSize = '26px';
-if (warmupBanner) warmupBanner.style.fontSize = '26px';
-if (messageBanner) messageBanner.style.fontSize = '26px';
-if (generalMessage) generalMessage.style.fontSize = '26px';
-if (currentEl) currentEl.style.fontSize = '22px';
-if (nextEl) nextEl.style.fontSize = '22px';
+if (competitionEl) competitionEl.style.fontSize = '54px';
+if (scoreboardBanner) scoreboardBanner.style.fontSize = '54px';
+if (warmupBanner) warmupBanner.style.fontSize = '54px';
+if (messageBanner) messageBanner.style.fontSize = '54px';
+if (generalMessage) generalMessage.style.fontSize = '54px';
+if (currentEl) currentEl.style.fontSize = '54px';
+if (nextEl) nextEl.style.fontSize = '54px';
 
 // Initial state fetch + live updates
 fetch('/state').then(r => r.json()).then(renderFromState).catch(() => {});
