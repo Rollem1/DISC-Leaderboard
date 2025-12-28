@@ -50,11 +50,11 @@ function renderFromState(data) {
   if (categoryEl) categoryEl.textContent = '';
 
   // ✅ Background image (CSS variable consumed by CSS)
-  if (data.backgroundImage) {
-    document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
-  } else {
-    document.body.style.setProperty('--overlay-bg', 'none');
-  }
+	if (data.backgroundImage) {
+	  document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
+	} else {
+	  document.body.style.removeProperty('--overlay-bg'); // allow CSS fallback
+	}
 
   // Apply font sizes globally if present
   if (data.fontSizes) {

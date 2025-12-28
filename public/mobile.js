@@ -22,7 +22,7 @@ function renderFromState(data) {
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
   } else {
-    document.body.style.setProperty('--overlay-bg', 'none');
+    document.body.style.removeProperty('--overlay-bg'); // allow CSS fallback
   }
 
   if (data.viewMode === 'scoreboard') renderScoreboardView(data);
@@ -41,7 +41,6 @@ function renderScoreboardView(data) {
   document.getElementById('currentSkater').textContent =
     data.currentSkater ? `Current: ${data.currentSkater.name} (${data.currentSkater.club})` : '';
 
-  /* Remaining skaters logic (same as desktop) */
   if (data.nextSkater) {
     const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
       .filter(p => p.score == null);
@@ -113,7 +112,6 @@ function renderWarmupView(data) {
   hideAllViews();
   document.getElementById('warmupView').style.display = 'block';
 
-  /* Category + Warmup group (same as desktop) */
   const categoryText = data.categoryName || "";
   const groupText = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : " Warmup";
   document.getElementById('warmupBanner').textContent =
