@@ -287,8 +287,11 @@
     window.addEventListener('DOMContentLoaded', async () => {
       const state = await fetch('/state').then(r => r.json());
 
+      // If server has no font sizes yet → push admin defaults
       if (!state.fontSizes) {
-        applyFontSettings();
+        setTimeout(() => {
+          applyFontSettings();
+        }, 300);
       }
 
       const select = document.getElementById('warmupSelect');
