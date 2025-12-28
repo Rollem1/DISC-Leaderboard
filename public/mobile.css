@@ -150,6 +150,8 @@ body::before {
 #messageView {
   display: flex;
   justify-content: center;
-  align-items: flex-start;       /* prevent vertical centering stretch */
-  padding: 20px 0;
+  align-items: flex-start;
+  padding-top: calc(var(--header-h) + var(--banner-h) + 15px); /* pushes below banner */
+  min-height: 100vh;
+  box-sizing: border-box;
 }
