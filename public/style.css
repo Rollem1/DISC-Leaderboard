@@ -1,9 +1,15 @@
-html, body {
-  margin: 0;
-  padding: 0;
+/* Lock overlay only */
+#overlayRoot {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
+  position: relative;
+}
+
+/* Background */
+body {
+  margin: 0;
+  padding: 0;
   background: #000;
   background-size: cover;
   background-position: center;
@@ -18,7 +24,7 @@ html, body {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 1920px;
   background: rgba(34,34,34,0.85);
   padding: 10px 0;
   text-align: center;
@@ -72,7 +78,7 @@ html, body {
   background: rgba(51,51,51,0.55);
 }
 
-/* Medal icons scaled to row height */
+/* Medal icons scaled */
 .leaderboard-row img {
   height: 0.8em;
   width: auto;
@@ -83,7 +89,7 @@ html, body {
   width: 40px;
 }
 
-/* Scrolling list */
+/* Leaderboard scroll area */
 #scrollWrapper {
   position: relative;
   width: 100%;
