@@ -24,15 +24,19 @@ const warmupBanner = document.getElementById('warmupBanner');
 const messageBanner = document.getElementById('messageBanner');
 
 //
-// ✅ APPLY DESKTOP DEFAULT FONT SIZES ON FIRST LOAD
+// ✅ APPLY 54PX DEFAULT FONT SIZES ON FIRST LOAD
 //
-if (competitionEl) competitionEl.style.fontSize = '54px';
-if (scoreboardBanner) scoreboardBanner.style.fontSize = '54px';
-if (warmupBanner) warmupBanner.style.fontSize = '54px';
-if (messageBanner) messageBanner.style.fontSize = '54px';
-if (generalMessage) generalMessage.style.fontSize = '54px';
-if (currentEl) currentEl.style.fontSize = '54px';
-if (nextEl) nextEl.style.fontSize = '54px';
+[
+  competitionEl,
+  scoreboardBanner,
+  warmupBanner,
+  messageBanner,
+  generalMessage,
+  currentEl,
+  nextEl
+].forEach(el => {
+  if (el) el.style.fontSize = '54px';
+});
 
 // Initial state fetch + live updates
 fetch('/state').then(r => r.json()).then(renderFromState).catch(() => {});
@@ -56,19 +60,19 @@ function positionScrollWrapper() {
 }
 
 function renderFromState(data) {
-  // Competition name always visible (category no longer displayed here)
+  // Competition name always visible
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
   if (categoryEl) categoryEl.textContent = '';
 
-  // ✅ Background image (CSS variable consumed by CSS)
+  // Background image
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
   } else {
-    document.body.style.removeProperty('--overlay-bg'); // allow CSS fallback
+    document.body.style.removeProperty('--overlay-bg');
   }
 
   //
-  // ✅ Apply font sizes from state IF present (overrides defaults above)
+  // ✅ ADMIN OVERRIDES (if present)
   //
   if (data.fontSizes) {
     if (competitionEl && data.fontSizes.competition != null)
@@ -92,7 +96,7 @@ function renderFromState(data) {
     if (nextEl && data.fontSizes.currentNext != null)
       nextEl.style.fontSize = data.fontSizes.currentNext + 'px';
 
-    // Safeguard for any already-rendered rows
+    // Already-rendered rows
     if (data.fontSizes.table != null) {
       document.querySelectorAll('.leaderboard-row').forEach(row => {
         row.style.fontSize = data.fontSizes.table + 'px';
@@ -117,7 +121,7 @@ function renderScoreboardView(data) {
   hideAllViews();
   scoreboardView.style.display = 'block';
 
-  // Banner: Category + " Leaderboard"
+  // Banner
   if (scoreboardBanner) {
     const categoryText = data.categoryName || data.category || '';
     scoreboardBanner.textContent = categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
@@ -160,10 +164,11 @@ function renderScoreboardView(data) {
     row.classList.add('leaderboard-row');
     if (index < 3) row.classList.add('top3');
 
-    // Table font size applied immediately if available
-    if (data.fontSizes && data.fontSizes.table != null) {
-      row.style.fontSize = data.fontSizes.table + 'px';
-    }
+    //
+    // ✅ Apply 54px default OR admin override
+    //
+    const tableSize = data.fontSizes?.table || 54;
+    row.style.fontSize = tableSize + 'px';
 
     if (index < 3) {
       const medal = document.createElement('img');
@@ -202,7 +207,6 @@ function renderScoreboardView(data) {
     else scrollingDiv.appendChild(row);
   });
 
-  // Scrolling animation decision
   requestAnimationFrame(() => {
     positionScrollWrapper();
     const contentHeight = scrollingDiv.scrollHeight;
@@ -217,14 +221,12 @@ function renderWarmupView(data) {
   hideAllViews();
   warmupView.style.display = 'block';
 
-  // Banner: Category + " Warmup {Group}"
   if (warmupBanner) {
     const categoryText = data.categoryName || data.category || '';
     const groupPart = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : ' Warmup';
     warmupBanner.textContent = categoryText ? `${categoryText}${groupPart}` : `Warmup${data.warmupGroup ? ' ' + data.warmupGroup : ''}`;
   }
 
-  // Optional label under banner
   warmupGroupLabel.textContent = data.warmupGroup ? `Group ${data.warmupGroup}` : '';
 
   warmupList.innerHTML = '';
@@ -232,28 +234,21 @@ function renderWarmupView(data) {
 
   const list = Array.isArray(data.warmupSkaters) ? data.warmupSkaters : [];
 
-  if (list.length > 0) {
-    list.forEach(skater => {
-      const row = document.createElement('div');
-      const order = skater.order != null ? `${skater.order}. ` : '';
-      row.textContent = `${order}${skater.name} (${skater.club})`;
-
-      // Table font size for warm-up rows
-      if (data.fontSizes && data.fontSizes.table != null) {
-        row.style.fontSize = data.fontSizes.table + 'px';
-      }
-
-      warmupList.appendChild(row);
-    });
-    adjustScrollSpeed();
-  } else {
+  list.forEach(skater => {
     const row = document.createElement('div');
-    row.textContent = 'No skaters in this group';
-    if (data.fontSizes && data.fontSizes.table != null) {
-      row.style.fontSize = data.fontSizes.table + 'px';
-    }
+    const order = skater.order != null ? `${skater.order}. ` : '';
+    row.textContent = `${order}${skater.name} (${skater.club})`;
+
+    //
+    // ✅ Apply 54px default OR admin override
+    //
+    const tableSize = data.fontSizes?.table || 54;
+    row.style.fontSize = tableSize + 'px';
+
     warmupList.appendChild(row);
-  }
+  });
+
+  adjustScrollSpeed();
 }
 
 function adjustScrollSpeed() {
@@ -271,7 +266,6 @@ function adjustScrollSpeed() {
     warmupList.dataset.scrolled = true;
   }
 
-  // Rough linear mapping (px/s ~ 50)
   const duration = (textHeight * 2) / 50;
   warmupList.style.animation = `scroll-up ${duration}s linear infinite`;
 }
@@ -280,15 +274,11 @@ function renderMessageView(data) {
   hideAllViews();
   messageView.style.display = 'flex';
 
-  // Competition name at top; message banner under it
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
-  if (messageBanner) {
-    messageBanner.textContent = 'Announcement';
-  }
+  if (messageBanner) messageBanner.textContent = 'Announcement';
 
   generalMessage.textContent = data.message || 'No message set';
 }
 
-// Reposition on load/resize for scoreboard scroll wrapper
 window.addEventListener('load', positionScrollWrapper);
 window.addEventListener('resize', positionScrollWrapper);
