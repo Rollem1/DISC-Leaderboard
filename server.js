@@ -30,13 +30,13 @@ let backgroundImage = null;
 
 // ✅ Font size state
 let fontSizes = {
-  scoreboard: 28,
-  warmup: 24,
-  message: 32,
-  competition: 36,
-  category: 28,
-  table: 24,
-  currentNext: 28
+  scoreboard: 54,
+  warmup: 54,
+  message: 54,
+  competition: 54,
+  category: 54,
+  table: 54,
+  currentNext: 54
 };
 
 // -------------------- Helpers --------------------
