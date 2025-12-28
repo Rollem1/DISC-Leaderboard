@@ -134,13 +134,22 @@ body::before {
 
 #generalMessage {
   width: 90%;
-  max-width: 600px;              /* cap width like desktop */
+  max-width: 600px;
   background: rgba(34,34,34,0.55);
-  padding: 8px 12px;             /* tighter padding */
+  padding: 8px 12px;
   border-radius: 6px;
   margin: 12px auto 0;
-  font-size: 15px;               /* match desktop font */
+  font-size: 15px;
   line-height: 1.3;
-  display: block;                /* prevents vertical stretch */
+  display: block;
   box-sizing: border-box;
+  max-height: fit-content;       /* prevents vertical stretch */
+  overflow-wrap: break-word;     /* ensures clean wrapping */
+  word-break: break-word;
+}
+#messageView {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;       /* prevent vertical centering stretch */
+  padding: 20px 0;
 }
