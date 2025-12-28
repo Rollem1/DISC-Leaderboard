@@ -13,7 +13,7 @@ html, body {
 
   /* Background image support */
   background-color: #111; /* fallback if no image */
-	background-image: var(--overlay-bg, url("/backgrounds/1766157551695_1766156176583_Disc_IJS_Background_1_.png"));
+	background-image: var(--overlay-bg, url("/backgrounds/Disc_IJS_Background_1_.png"));
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
