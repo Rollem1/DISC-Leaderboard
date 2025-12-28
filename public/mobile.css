@@ -132,12 +132,15 @@ body::before {
   background: rgba(51,51,51,0.55);
 }
 
-/* Message */
 #generalMessage {
-  max-width: 95%;
-  background: rgba(34,34,34,0.55); /* softened transparency */
-  padding: 12px;
+  max-width: 90%;              /* wider like desktop */
+  width: 90%;                  /* force width */
+  background: rgba(34,34,34,0.55);
+  padding: 10px 14px;          /* reduce height */
   border-radius: 6px;
-  margin-top: 15px;
-  font-size: 19px;
+  margin: 12px auto 0;         /* center + reduce spacing */
+  font-size: 16px;             /* slightly smaller */
+  line-height: 1.3;            /* tighter spacing */
+  display: inline-block;       /* prevents vertical stretching */
 }
+
