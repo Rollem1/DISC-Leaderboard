@@ -29,15 +29,7 @@ let messageText = "";
 let backgroundImage = null;
 
 // ✅ Font size state
-let fontSizes = {
-  scoreboard: 28,
-  warmup: 24,
-  message: 32,
-  competition: 36,
-  category: 28,
-  table: 24,
-  currentNext: 28
-};
+let fontSizes = null;
 
 // -------------------- Helpers --------------------
 function recomputeCurrentNext() {

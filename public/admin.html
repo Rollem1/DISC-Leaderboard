@@ -13,7 +13,6 @@
     .admin-row strong { flex: 2; text-align: left; }
     .admin-row span { flex: 1; color: #ccc; text-align: left; }
 
-    /* Popup styling */
     .popup {
       display: none;
       position: fixed;
@@ -47,14 +46,15 @@
     <input type="file" id="file" name="file" accept=".csv" required class="admin-input">
     <button type="submit" class="admin-button">Upload</button>
   </form>
-  
-	<h3>Background Image</h3>
-	<form id="bgForm" enctype="multipart/form-data">
-	  <input type="file" name="file" accept="image/*">
-	  <button type="submit">Upload Background</button>
-	</form>
-	
-<button id="clearBg">Clear Background</button>
+
+  <h3>Background Image</h3>
+  <form id="bgForm" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/*">
+    <button type="submit">Upload Background</button>
+  </form>
+
+  <button id="clearBg">Clear Background</button>
+
   <h2>View Mode</h2>
   <button class="admin-button" onclick="setViewMode('scoreboard')">Show Scoreboard</button>
   <button class="admin-button" onclick="setViewMode('warmup')">Show Warm-Up</button>
@@ -80,7 +80,6 @@
   <h2>Font Settings</h2>
   <button class="admin-button" onclick="openFontPopup()">Open Font Settings</button>
 
-  <!-- Popup -->
   <div id="fontPopup" class="popup">
     <h2>Font Size Settings</h2>
     <label>Competition Heading Font Size:
@@ -111,7 +110,6 @@
   <p id="status"></p>
 
   <script>
-    // Competition name update
     document.getElementById('configForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const competitionName = document.getElementById('competition').value;
@@ -127,7 +125,6 @@
       }
     });
 
-    // CSV upload
     document.getElementById('uploadForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fileInput = document.getElementById('file');
@@ -144,7 +141,6 @@
         if (!res.ok) throw new Error('Upload failed');
         const data = await res.json();
 
-        // Category driven by filename
         const categoryName = file.name.replace(/\.[^/.]+$/, "");
         await fetch('/config', {
           method: 'POST',
@@ -160,7 +156,6 @@
       }
     });
 
-    // Render skaters with per-row update
     function renderSkaters(skaters) {
       const container = document.getElementById('skaterList');
       container.innerHTML = '';
@@ -191,7 +186,7 @@
         document.getElementById('status').textContent = 'Error updating score: ' + err.message;
       }
     }
-    // View mode
+
     async function setViewMode(mode) {
       try {
         await fetch('/setViewMode', {
@@ -267,32 +262,35 @@
         document.getElementById('status').textContent = 'Error updating font sizes: ' + err.message;
       }
     }
-	
-// Background image upload
-document.getElementById('bgForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const formData = new FormData(e.target);
-  try {
-    const res = await fetch('/uploadBackground', { method: 'POST', body: formData });
-    if (!res.ok) throw new Error('Upload failed');
-    const data = await res.json();
-    document.getElementById('status').textContent = `Background updated!`;
-  } catch (err) {
-    document.getElementById('status').textContent = 'Background upload error: ' + err.message;
-  }
-});
 
-// Clear background
-document.getElementById('clearBg').addEventListener('click', async () => {
-  try {
-    await fetch('/clearBackground', { method: 'POST' });
-    document.getElementById('status').textContent = 'Background cleared!';
-  } catch (err) {
-    document.getElementById('status').textContent = 'Error clearing background: ' + err.message;
-  }
-});
-    // Default warm-up group on page load
-    window.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('bgForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      try {
+        const res = await fetch('/uploadBackground', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Upload failed');
+        document.getElementById('status').textContent = `Background updated!`;
+      } catch (err) {
+        document.getElementById('status').textContent = 'Background upload error: ' + err.message;
+      }
+    });
+
+    document.getElementById('clearBg').addEventListener('click', async () => {
+      try {
+        await fetch('/clearBackground', { method: 'POST' });
+        document.getElementById('status').textContent = 'Background cleared!';
+      } catch (err) {
+        document.getElementById('status').textContent = 'Error clearing background: ' + err.message;
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      const state = await fetch('/state').then(r => r.json());
+
+      if (!state.fontSizes) {
+        applyFontSettings();
+      }
+
       const select = document.getElementById('warmupSelect');
       if (select) {
         select.value = "1";
