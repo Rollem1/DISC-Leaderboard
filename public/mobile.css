@@ -20,7 +20,7 @@ body::before {
   top: 0; left: 0;
   width: 100%;
   height: 100%;
-  background-image: var(--overlay-bg, url("/backgrounds/1766157551695_1766156176583_Disc_IJS_Background_1_.png"));
+  background-image: var(--overlay-bg, url("/backgrounds/Disc_IJS_Background_1_.png"));
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -86,11 +86,11 @@ body::before {
 .leaderboard-row {
   display: grid;
   grid-template-columns:
-    0.2fr   /* medal */
-    0.2fr   /* position */
-    2.8fr   /* name */
-    0.3fr   /* club */
-    0.4fr;    /* score */
+    20px   /* medal */
+    25px   /* position */
+    1fr   /* name */
+    30px   /* club */
+    45px;    /* score */
   align-items: center;
   gap: 4px;
   margin: 4px auto;

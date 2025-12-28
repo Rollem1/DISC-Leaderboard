@@ -97,7 +97,7 @@ html, body {
 /* Leaderboard rows */
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 50px 50px 1fr 120px 170px;
+  grid-template-columns: 50px 60px 1fr 120px 170px;
   align-items: center;
   gap: 10px;
   margin: 5px auto;
