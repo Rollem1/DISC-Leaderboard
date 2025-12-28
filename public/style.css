@@ -1,6 +1,9 @@
-body {
+html, body {
   margin: 0;
   padding: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
   background: #000;
   background-size: cover;
   background-position: center;
@@ -55,10 +58,11 @@ body {
 
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 0.4fr 0.6fr 2.5fr 0.5fr 1fr;
+  grid-template-columns: 0.3fr 0.4fr 2.5fr 0.5fr 1fr;
   gap: 10px;
   padding: 10px;
-  margin: 6px 0;
+  margin: 6px auto;
+  width: 90%;
   background: rgba(34,34,34,0.55);
   border-radius: 6px;
   font-size: 54px;
@@ -66,6 +70,13 @@ body {
 
 .top3 {
   background: rgba(51,51,51,0.55);
+}
+
+/* Medal icons scaled to row height */
+.leaderboard-row img {
+  height: 0.8em;
+  width: auto;
+  object-fit: contain;
 }
 
 .medal-spacer {
@@ -76,7 +87,7 @@ body {
 #scrollWrapper {
   position: relative;
   width: 100%;
-  height: calc(100vh - 450px);
+  height: 500px;
   overflow: hidden;
 }
 
@@ -116,7 +127,7 @@ body {
   font-size: 54px;
 }
 
-/* Warmup scroll animation */
+/* Scroll animation */
 @keyframes scroll-up {
   0%   { transform: translateY(0); }
   100% { transform: translateY(-50%); }

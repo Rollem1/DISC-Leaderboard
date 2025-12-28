@@ -1,6 +1,7 @@
-body {
+html, body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
   background: #000;
   background-size: cover;
   background-position: center;
@@ -48,7 +49,7 @@ body {
 /* Leaderboard */
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 0.4fr 0.6fr 2fr 0.6fr 1fr;
+  grid-template-columns: 0.3fr 0.4fr 2fr 0.6fr 1fr;
   gap: 4px;
   padding: 6px;
   margin: 4px auto;
@@ -60,6 +61,12 @@ body {
 
 .top3 {
   background: rgba(51,51,51,0.55);
+}
+
+.leaderboard-row img {
+  height: 1em;
+  width: auto;
+  object-fit: contain;
 }
 
 .medal-spacer {
@@ -97,7 +104,7 @@ body {
   font-size: 24px;
 }
 
-/* Warmup scroll animation */
+/* Scroll animation */
 @keyframes scroll-up {
   0%   { transform: translateY(0); }
   100% { transform: translateY(-50%); }

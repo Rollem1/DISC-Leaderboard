@@ -104,6 +104,29 @@ function renderScoreboard(data) {
     if (i < 3) leaderboardDiv.appendChild(row);
     else scrollingDiv.appendChild(row);
   });
+
+  startLeaderboardScroll();
+}
+
+function startLeaderboardScroll() {
+  const wrapper = document.getElementById('scrollWrapper');
+  const list = document.getElementById('scrollingList');
+
+  if (!wrapper || !list) return;
+
+  const wrapperHeight = wrapper.offsetHeight;
+  const listHeight = list.scrollHeight;
+
+  if (listHeight <= wrapperHeight) {
+    list.style.animation = 'none';
+    return;
+  }
+
+  list.innerHTML += list.innerHTML;
+
+  const duration = (listHeight * 2) / 40;
+
+  list.style.animation = `scroll-up ${duration}s linear infinite`;
 }
 
 function renderWarmup(data) {
