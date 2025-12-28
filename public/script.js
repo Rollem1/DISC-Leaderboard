@@ -108,7 +108,7 @@ function renderScoreboardView(data) {
     const remainingCount = data.currentSkater
       ? remaining.filter(p => p.name !== data.currentSkater.name).length
       : remaining.length;
-    nextEl.textContent = `${remainingCount} skaters to skate - Skating next ${data.nextSkater.name}`;
+    nextEl.textContent = `${remainingCount} to skate - Skating next ${data.nextSkater.name}`;
   } else {
     nextEl.textContent = '';
   }

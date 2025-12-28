@@ -50,7 +50,7 @@ function renderScoreboardView(data) {
       : remaining.length;
 
     document.getElementById('nextSkater').textContent =
-      `${remainingCount} skaters to skate – Next: ${data.nextSkater.name}`;
+      `${remainingCount} to skate – Next: ${data.nextSkater.name}`;
   } else {
     document.getElementById('nextSkater').textContent = '';
   }
