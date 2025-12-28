@@ -25,10 +25,16 @@ function hideAll() {
 }
 
 function renderFromState(data) {
-  // Banner line 1 = competition
+  // Background
+  if (data.backgroundImage) {
+    document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
+  } else {
+    document.body.style.removeProperty('--overlay-bg');
+  }
+
+  // Banner
   bannerLine1.textContent = data.competitionName || '';
 
-  // Banner line 2 depends on view
   if (data.viewMode === 'scoreboard') {
     bannerLine2.textContent = `${data.categoryName || ''} Leaderboard`;
   }
@@ -43,7 +49,7 @@ function renderFromState(data) {
     bannerLine2.textContent = 'Announcement';
   }
 
-  // Apply font sizes
+  // Font sizes
   const fs = data.fontSizes || {};
 
   bannerLine1.style.fontSize = fs.competition + 'px';
@@ -75,27 +81,24 @@ function renderScoreboard(data) {
 
   const fs = data.fontSizes.table;
 
-  data.leaderboard
-    .filter(p => p.score != null)
-    .sort((a, b) => parseFloat(b.score) - parseFloat(a.score))
-    .forEach((p, i) => {
-      const row = document.createElement('div');
-      row.className = 'leaderboard-row';
-      row.style.fontSize = fs + 'px';
+  data.leaderboard.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'leaderboard-row';
+    row.style.fontSize = fs + 'px';
 
-      if (i < 3) row.classList.add('top3');
+    if (i < 3) row.classList.add('top3');
 
-      row.innerHTML = `
-        ${i < 3 ? `<img src="/${['Gold','Silver','Bronze'][i]} 100x100px.png">` : `<span class="medal-spacer"></span>`}
-        <span>${i + 1}</span>
-        <span>${p.name}</span>
-        <span>${p.club}</span>
-        <span>${p.score}</span>
-      `;
+    row.innerHTML = `
+      ${i < 3 ? `<img src="/${['Gold','Silver','Bronze'][i]} 100x100px.png">` : `<span class="medal-spacer"></span>`}
+      <span>${i + 1}</span>
+      <span>${p.name}</span>
+      <span>${p.club}</span>
+      <span>${p.score ?? ''}</span>
+    `;
 
-      if (i < 3) leaderboardDiv.appendChild(row);
-      else scrollingDiv.appendChild(row);
-    });
+    if (i < 3) leaderboardDiv.appendChild(row);
+    else scrollingDiv.appendChild(row);
+  });
 }
 
 function renderWarmup(data) {
@@ -111,6 +114,29 @@ function renderWarmup(data) {
     row.style.fontSize = fs + 'px';
     warmupList.appendChild(row);
   });
+
+  startWarmupScroll();
+}
+
+function startWarmupScroll() {
+  const container = document.querySelector('.scroll-container');
+  const list = warmupList;
+
+  if (!container || !list) return;
+
+  const containerHeight = container.offsetHeight;
+  const listHeight = list.scrollHeight;
+
+  if (listHeight <= containerHeight) {
+    list.style.animation = 'none';
+    return;
+  }
+
+  list.innerHTML += list.innerHTML;
+
+  const duration = (listHeight * 2) / 40;
+
+  list.style.animation = `scroll-up ${duration}s linear infinite`;
 }
 
 function renderMessage(data) {

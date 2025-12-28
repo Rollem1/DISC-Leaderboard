@@ -2,11 +2,15 @@ body {
   margin: 0;
   padding: 0;
   background: #000;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: var(--overlay-bg);
   color: #fff;
   font-family: Arial, sans-serif;
 }
 
-/* TWO-LINE TOP BANNER */
+/* Banner */
 #topBanner {
   position: fixed;
   top: 0;
@@ -63,7 +67,18 @@ body {
 }
 
 /* Warmup */
+.scroll-container {
+  position: relative;
+  overflow: hidden;
+  height: calc(100vh - 110px);
+}
+
 .scroll-container > div {
+  position: absolute;
+  width: 100%;
+}
+
+.scroll-container > div > div {
   padding: 8px;
   margin: 6px auto;
   width: 95%;

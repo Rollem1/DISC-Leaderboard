@@ -2,11 +2,15 @@ body {
   margin: 0;
   padding: 0;
   background: #000;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: var(--overlay-bg);
   color: #fff;
   font-family: Arial, sans-serif;
 }
 
-/* NEW TWO-LINE TOP BANNER */
+/* Two-line banner */
 #topBanner {
   position: fixed;
   top: 0;
@@ -31,7 +35,7 @@ body {
 
 /* Views */
 .view {
-  padding-top: 150px; /* space for two-line banner */
+  padding-top: 150px;
   width: 100%;
   text-align: center;
 }
@@ -81,7 +85,18 @@ body {
 }
 
 /* Warmup */
+.scroll-container {
+  position: relative;
+  overflow: hidden;
+  height: calc(100vh - 150px);
+}
+
 .scroll-container > div {
+  position: absolute;
+  width: 100%;
+}
+
+.scroll-container > div > div {
   padding: 10px;
   margin: 6px auto;
   width: 90%;
