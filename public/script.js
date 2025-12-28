@@ -1,8 +1,8 @@
 const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 const ws = new WebSocket(`${protocol}://${window.location.host}`);
 
-const bannerLine1 = document.getElementById('bannerLine1');
-const bannerLine2 = document.getElementById('bannerLine2');
+const competitionEl = document.getElementById('competitionName');
+const categoryEl = document.getElementById('categoryName');
 
 const scoreboardView = document.getElementById('scoreboardView');
 const warmupView = document.getElementById('warmupView');
@@ -12,163 +12,256 @@ const currentEl = document.getElementById('currentSkater');
 const nextEl = document.getElementById('nextSkater');
 const leaderboardDiv = document.getElementById('leaderboard');
 const scrollingDiv = document.getElementById('scrollingList');
+
+const warmupGroupLabel = document.getElementById('warmupGroupLabel');
 const warmupList = document.getElementById('warmupList');
+
 const generalMessage = document.getElementById('generalMessage');
 
-fetch('/state').then(r => r.json()).then(renderFromState);
+// Banner elements
+const scoreboardBanner = document.getElementById('scoreboardBanner');
+const warmupBanner = document.getElementById('warmupBanner');
+const messageBanner = document.getElementById('messageBanner');
+
+// Initial state fetch + live updates
+fetch('/state').then(r => r.json()).then(renderFromState).catch(() => {});
+ws.onopen = () => console.log("✅ WebSocket connected");
 ws.onmessage = e => renderFromState(JSON.parse(e.data));
 
-function hideAll() {
+function hideAllViews() {
   scoreboardView.style.display = 'none';
   warmupView.style.display = 'none';
   messageView.style.display = 'none';
 }
 
-function renderFromState(data) {
-  // Background
-  if (data.backgroundImage) {
-    document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
-  } else {
-    document.body.style.removeProperty('--overlay-bg');
-  }
-
-  // Banner
-  bannerLine1.textContent = data.competitionName || '';
-
-  if (data.viewMode === 'scoreboard') {
-    bannerLine2.textContent = `${data.categoryName || ''} Leaderboard`;
-  }
-
-  if (data.viewMode === 'warmup') {
-    const cat = data.categoryName || '';
-    const grp = data.warmupGroup ? `Warmup ${data.warmupGroup}` : 'Warmup';
-    bannerLine2.textContent = `${cat} – ${grp}`;
-  }
-
-  if (data.viewMode === 'message') {
-    bannerLine2.textContent = 'Announcement';
-  }
-
-  // Font sizes
-  const fs = data.fontSizes || {};
-
-  bannerLine1.style.fontSize = fs.competition + 'px';
-  bannerLine2.style.fontSize = fs.scoreboard + 'px';
-
-  currentEl.style.fontSize = fs.currentNext + 'px';
-  nextEl.style.fontSize = fs.currentNext + 'px';
-  generalMessage.style.fontSize = fs.message + 'px';
-
-  if (data.viewMode === 'scoreboard') renderScoreboard(data);
-  if (data.viewMode === 'warmup') renderWarmup(data);
-  if (data.viewMode === 'message') renderMessage(data);
+function positionScrollWrapper() {
+  const scrollWrapper = document.getElementById('scrollWrapper');
+  const leaderboardBlock = document.getElementById('leaderboard');
+  if (!scrollWrapper || !leaderboardBlock) return;
+  const gap = 5;
+  const top = leaderboardBlock.offsetTop + leaderboardBlock.offsetHeight + gap;
+  scrollWrapper.style.top = `${top}px`;
+  scrollWrapper.style.height = `${window.innerHeight - top}px`;
 }
 
-function renderScoreboard(data) {
-  hideAll();
+function renderFromState(data) {
+  // Competition name always visible (category no longer displayed here)
+  if (competitionEl) competitionEl.textContent = data.competitionName || '';
+  if (categoryEl) categoryEl.textContent = '';
+
+  // ✅ Background image (CSS variable consumed by CSS)
+	if (data.backgroundImage) {
+	  document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
+	} else {
+	  document.body.style.removeProperty('--overlay-bg'); // allow CSS fallback
+	}
+
+  // Apply font sizes globally if present
+  if (data.fontSizes) {
+    if (competitionEl) competitionEl.style.fontSize = data.fontSizes.competition + 'px';
+
+    if (scoreboardBanner) scoreboardBanner.style.fontSize = data.fontSizes.scoreboard + 'px';
+    if (warmupBanner) warmupBanner.style.fontSize = data.fontSizes.warmup + 'px';
+    if (messageBanner) messageBanner.style.fontSize = data.fontSizes.message + 'px';
+    if (generalMessage) generalMessage.style.fontSize = data.fontSizes.message + 'px';
+
+    if (currentEl) currentEl.style.fontSize = data.fontSizes.currentNext + 'px';
+    if (nextEl) nextEl.style.fontSize = data.fontSizes.currentNext + 'px';
+
+    // Safeguard for any already-rendered rows
+    document.querySelectorAll('.leaderboard-row').forEach(row => {
+      row.style.fontSize = data.fontSizes.table + 'px';
+    });
+    document.querySelectorAll('#warmupList > div').forEach(row => {
+      row.style.fontSize = data.fontSizes.table + 'px';
+    });
+  }
+
+  // Route to the correct view
+  if (data.viewMode === 'scoreboard') {
+    renderScoreboardView(data);
+  } else if (data.viewMode === 'warmup') {
+    renderWarmupView(data);
+  } else if (data.viewMode === 'message') {
+    renderMessageView(data);
+  }
+}
+
+function renderScoreboardView(data) {
+  hideAllViews();
   scoreboardView.style.display = 'block';
 
+  // Banner: Category + " Leaderboard"
+  if (scoreboardBanner) {
+    const categoryText = data.categoryName || data.category || '';
+    scoreboardBanner.textContent = categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
+  }
+
+  // Current / Next
   currentEl.textContent = data.currentSkater
     ? `Current Skater: ${data.currentSkater.name} (${data.currentSkater.club})`
     : '';
 
-  nextEl.textContent = data.nextSkater
-    ? `Skating next: ${data.nextSkater.name}`
-    : '';
+  if (data.nextSkater) {
+    const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
+      .filter(p => p.score == null);
+    const remainingCount = data.currentSkater
+      ? remaining.filter(p => p.name !== data.currentSkater.name).length
+      : remaining.length;
+    nextEl.textContent = `${remainingCount} to skate - Skating next ${data.nextSkater.name}`;
+  } else {
+    nextEl.textContent = '';
+  }
 
+  // Build leaderboard
   leaderboardDiv.innerHTML = '';
   scrollingDiv.innerHTML = '';
 
-  const fs = data.fontSizes.table;
+  const lb = Array.isArray(data.leaderboard) ? data.leaderboard : [];
+  const specials = ['DNF', 'DQ', 'WD'];
 
-  // Only scored skaters, sorted
-  const scored = data.leaderboard
-    .filter(p => p.score != null && p.score !== "")
-    .sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
+  const scored = lb.filter(p => p.score != null).sort((a, b) => {
+    const aSpecial = specials.includes(String(a.score).toUpperCase());
+    const bSpecial = specials.includes(String(b.score).toUpperCase());
+    if (aSpecial && bSpecial) return 0;
+    if (aSpecial) return 1;
+    if (bSpecial) return -1;
+    return parseFloat(b.score) - parseFloat(a.score);
+  });
 
-  scored.forEach((p, i) => {
+  scored.forEach((player, index) => {
     const row = document.createElement('div');
-    row.className = 'leaderboard-row';
-    row.style.fontSize = fs + 'px';
+    row.classList.add('leaderboard-row');
+    if (index < 3) row.classList.add('top3');
 
-    if (i < 3) row.classList.add('top3');
+    // Table font size applied immediately
+    if (data.fontSizes && data.fontSizes.table) {
+      row.style.fontSize = data.fontSizes.table + 'px';
+    }
 
-    row.innerHTML = `
-      ${i < 3 ? `<img src="/${['Gold','Silver','Bronze'][i]} 100x100px.png">` : `<span class="medal-spacer"></span>`}
-      <span>${i + 1}</span>
-      <span>${p.name}</span>
-      <span>${p.club}</span>
-      <span>${p.score}</span>
-    `;
+    if (index < 3) {
+      const medal = document.createElement('img');
+      if (index === 0) medal.src = "/Gold 100x100px.png";
+      if (index === 1) medal.src = "/Silver 100x100px.png";
+      if (index === 2) medal.src = "/Bronze 100x100px.png";
+      medal.alt = "Medal";
+      row.appendChild(medal);
+    } else {
+      const spacer = document.createElement('span');
+      spacer.classList.add('medal-spacer');
+      row.appendChild(spacer);
+    }
 
-    if (i < 3) leaderboardDiv.appendChild(row);
+    const pos = document.createElement('span');
+    pos.classList.add('position');
+    pos.textContent = index + 1;
+    row.appendChild(pos);
+
+    const name = document.createElement('span');
+    name.classList.add('name');
+    name.textContent = player.name;
+    row.appendChild(name);
+
+    const club = document.createElement('span');
+    club.classList.add('club');
+    club.textContent = player.club;
+    row.appendChild(club);
+
+    const score = document.createElement('span');
+    score.classList.add('score');
+    score.textContent = player.score;
+    row.appendChild(score);
+
+    if (index < 3) leaderboardDiv.appendChild(row);
     else scrollingDiv.appendChild(row);
   });
 
-  startLeaderboardScroll();
+  // Scrolling animation decision
+  requestAnimationFrame(() => {
+    positionScrollWrapper();
+    const contentHeight = scrollingDiv.scrollHeight;
+    const containerHeight = document.getElementById('scrollWrapper').offsetHeight;
+    scrollingDiv.style.animation = contentHeight > containerHeight
+      ? `scrollOnce ${contentHeight / 30}s linear infinite`
+      : 'none';
+  });
 }
 
-function startLeaderboardScroll() {
-  const wrapper = document.getElementById('scrollWrapper');
-  const list = document.getElementById('scrollingList');
-
-  if (!wrapper || !list) return;
-
-  const wrapperHeight = wrapper.offsetHeight;
-  const listHeight = list.scrollHeight;
-
-  if (listHeight <= wrapperHeight) {
-    list.style.animation = 'none';
-    return;
-  }
-
-  list.innerHTML += list.innerHTML;
-
-  const duration = (listHeight * 2) / 40;
-
-  list.style.animation = `scroll-up ${duration}s linear infinite`;
-}
-
-function renderWarmup(data) {
-  hideAll();
+function renderWarmupView(data) {
+  hideAllViews();
   warmupView.style.display = 'block';
 
-  warmupList.innerHTML = '';
-  const fs = data.fontSizes.table;
-
-  data.warmupSkaters.forEach(s => {
-    const row = document.createElement('div');
-    row.textContent = `${s.order}. ${s.name} (${s.club})`;
-    row.style.fontSize = fs + 'px';
-    warmupList.appendChild(row);
-  });
-
-  startWarmupScroll();
-}
-
-function startWarmupScroll() {
-  const container = document.querySelector('.scroll-container');
-  const list = warmupList;
-
-  if (!container || !list) return;
-
-  const containerHeight = container.offsetHeight;
-  const listHeight = list.scrollHeight;
-
-  if (listHeight <= containerHeight) {
-    list.style.animation = 'none';
-    return;
+  // Banner: Category + " Warmup {Group}"
+  if (warmupBanner) {
+    const categoryText = data.categoryName || data.category || '';
+    const groupPart = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : ' Warmup';
+    warmupBanner.textContent = categoryText ? `${categoryText}${groupPart}` : `Warmup${data.warmupGroup ? ' ' + data.warmupGroup : ''}`;
   }
 
-  list.innerHTML += list.innerHTML;
+  // Optional label under banner (keep or remove)
+  warmupGroupLabel.textContent = data.warmupGroup ? `Group ${data.warmupGroup}` : '';
 
-  const duration = (listHeight * 2) / 40;
+  warmupList.innerHTML = '';
+  warmupList.dataset.scrolled = '';
 
-  list.style.animation = `scroll-up ${duration}s linear infinite`;
+  const list = Array.isArray(data.warmupSkaters) ? data.warmupSkaters : [];
+  if (list.length > 0) {
+    list.forEach(skater => {
+      const row = document.createElement('div');
+      const order = skater.order != null ? `${skater.order}. ` : '';
+      row.textContent = `${order}${skater.name} (${skater.club})`;
+
+      // Table font size for warm-up rows
+      if (data.fontSizes && data.fontSizes.table) {
+        row.style.fontSize = data.fontSizes.table + 'px';
+      }
+
+      warmupList.appendChild(row);
+    });
+    adjustScrollSpeed();
+  } else {
+    const row = document.createElement('div');
+    row.textContent = 'No skaters in this group';
+    if (data.fontSizes && data.fontSizes.table) {
+      row.style.fontSize = data.fontSizes.table + 'px';
+    }
+    warmupList.appendChild(row);
+  }
 }
 
-function renderMessage(data) {
-  hideAll();
-  messageView.style.display = 'block';
-  generalMessage.textContent = data.message || '';
+function adjustScrollSpeed() {
+  const container = document.querySelector('.scroll-container');
+  if (!container) return;
+  const containerHeight = container.offsetHeight;
+  const textHeight = warmupList.scrollHeight;
+
+  if (textHeight <= containerHeight) {
+    warmupList.style.animation = 'none';
+    return;
+  }
+  if (!warmupList.dataset.scrolled) {
+    warmupList.innerHTML += warmupList.innerHTML;
+    warmupList.dataset.scrolled = true;
+  }
+
+  // Rough linear mapping (px/s ~ 50)
+  const duration = (textHeight * 2) / 50;
+  warmupList.style.animation = `scroll-up ${duration}s linear infinite`;
 }
+
+function renderMessageView(data) {
+  hideAllViews();
+  messageView.style.display = 'flex';
+
+  // Competition name at top; message banner under it
+  if (competitionEl) competitionEl.textContent = data.competitionName || '';
+  if (messageBanner) {
+    messageBanner.textContent = 'Announcement';
+  }
+
+  generalMessage.textContent = data.message || 'No message set';
+}
+
+// Reposition on load/resize for scoreboard scroll wrapper
+window.addEventListener('load', positionScrollWrapper);
+window.addEventListener('resize', positionScrollWrapper);
