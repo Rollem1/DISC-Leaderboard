@@ -1,212 +1,202 @@
-// =========================
-// server.js (Final Version)
-// =========================
-
 const express = require('express');
+const bodyParser = require('body-parser');
+const WebSocket = require('ws');
+const http = require('http');
+const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
-const path = require('path');
-const http = require('http');
-const WebSocket = require('ws');
+const csv = require('csv-parser');
 
 const app = express();
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-app.use(express.json());
-app.use(express.static('public'));
-
-// -------------------------
-// STATE
-// -------------------------
-
+// -------------------- State --------------------
 let competitionName = "";
 let categoryName = "";
-let messageText = "";
-let warmupGroup = "1";
+let leaderboard = [];
+let currentSkater = null;
+let nextSkater = null;
+let warmupGroup = null;
+let warmupSkaters = [];
 let viewMode = "scoreboard";
+let messageText = "";
+
+// ✅ Background image path (served from /public/backgrounds/)
 let backgroundImage = null;
 
-// IMPORTANT: No defaults here.
-// Admin panel sends defaults on first load.
+// ✅ Font size state
 let fontSizes = null;
 
-// Leaderboard data
-let leaderboard = [];
+// -------------------- Helpers --------------------
+function recomputeCurrentNext() {
+  const nextIndex = leaderboard.findIndex(p => p.score == null);
+  currentSkater = nextIndex >= 0 ? leaderboard[nextIndex] : null;
+  nextSkater = nextIndex >= 0 && nextIndex + 1 < leaderboard.length
+    ? leaderboard[nextIndex + 1]
+    : null;
+}
 
-// -------------------------
-// HELPERS
-// -------------------------
-
-function broadcastState() {
-  const state = {
+function currentPayload() {
+  const payload = {
     competitionName,
     categoryName,
-    messageText,
-    warmupGroup,
-    viewMode,
-    backgroundImage,
     leaderboard,
-    fontSizes   // ALWAYS INCLUDED
+    currentSkater,
+    nextSkater,
+    viewMode,
+    fontSizes,
+    backgroundImage   // ✅ include bg image in payload
   };
+  if (viewMode === "warmup") {
+    payload.warmupGroup = warmupGroup;
+    payload.warmupSkaters = warmupSkaters;
+  }
+  if (viewMode === "message") {
+    payload.message = messageText;
+  }
+  return payload;
+}
 
-  const json = JSON.stringify(state);
-
+function broadcast(data = currentPayload()) {
+  const payload = JSON.stringify(data);
   wss.clients.forEach(client => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(json);
-    }
+    if (client.readyState === WebSocket.OPEN) client.send(payload);
   });
 }
 
-// -------------------------
-// ROUTES
-// -------------------------
+// -------------------- Background upload --------------------
+const backgroundsDir = path.join(__dirname, 'public', 'backgrounds');
+if (!fs.existsSync(backgroundsDir)) {
+  fs.mkdirSync(backgroundsDir, { recursive: true });
+}
 
-// Admin updates competition name, category name, or font sizes
-app.post('/config', (req, res) => {
-  const {
-    competitionName: comp,
-    categoryName: cat,
-    competitionFont,
-    tableFont,
-    scoreboardFont,
-    warmupFont,
-    messageFont,
-    currentNextFont
-  } = req.body;
+const bgUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, backgroundsDir),
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname) || '.png';
+      const base = path.basename(file.originalname, ext).replace(/\s+/g, '_');
+      cb(null, `${Date.now()}_${base}${ext}`);
+    }
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10 MB
+});
 
-  if (comp !== undefined) competitionName = comp;
-  if (cat !== undefined) categoryName = cat;
-
-  // Update font sizes if provided
-  if (
-    competitionFont !== undefined ||
-    tableFont !== undefined ||
-    scoreboardFont !== undefined ||
-    warmupFont !== undefined ||
-    messageFont !== undefined ||
-    currentNextFont !== undefined
-  ) {
-    fontSizes = {
-      competition: Number(competitionFont),
-      table: Number(tableFont),
-      scoreboard: Number(scoreboardFont),
-      warmup: Number(warmupFont),
-      message: Number(messageFont),
-      currentNext: Number(currentNextFont)
-    };
+app.post('/uploadBackground', bgUpload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
   }
 
-  broadcastState();
-  res.json({ status: "ok" });
+  // Save relative path for client usage
+  backgroundImage = `/backgrounds/${req.file.filename}`;
+  console.log("✅ Background image uploaded:", backgroundImage);
+
+  broadcast();
+  res.json({ success: true, backgroundImage });
 });
 
-// Update score
-app.post('/update', (req, res) => {
-  const { name, score } = req.body;
-  const skater = leaderboard.find(s => s.name === name);
-  if (skater) skater.score = score;
-  broadcastState();
-  res.json({ status: "ok" });
-});
-
-// Update warmup group
-app.post('/setWarmupGroup', (req, res) => {
-  warmupGroup = req.body.group;
-  broadcastState();
-  res.json({ status: "ok" });
-});
-
-// Update message
-app.post('/setMessage', (req, res) => {
-  messageText = req.body.message;
-  broadcastState();
-  res.json({ status: "ok" });
-});
-
-// Update view mode
-app.post('/setViewMode', (req, res) => {
-  viewMode = req.body.mode;
-  broadcastState();
-  res.json({ status: "ok" });
-});
-
-// Upload CSV
-const upload = multer({ dest: 'uploads/' });
-app.post('/upload', upload.single('file'), (req, res) => {
-  const filePath = req.file.path;
-  const csv = fs.readFileSync(filePath, 'utf8');
-  fs.unlinkSync(filePath);
-
-  const lines = csv.split('\n').filter(l => l.trim() !== '');
-  leaderboard = lines.map(line => {
-    const [name, club, group] = line.split(',');
-    return { name, club, group, score: "" };
-  });
-
-  broadcastState();
-  res.json({ leaderboard });
-});
-
-// Background upload
-const bgUpload = multer({ dest: 'backgrounds/' });
-app.post('/uploadBackground', bgUpload.single('file'), (req, res) => {
-  const filePath = req.file.path;
-  const ext = path.extname(req.file.originalname);
-  const newPath = `public/background${ext}`;
-
-  fs.renameSync(filePath, newPath);
-  backgroundImage = `/background${ext}`;
-
-  broadcastState();
-  res.json({ status: "ok" });
-});
-
-// Clear background
 app.post('/clearBackground', (req, res) => {
   backgroundImage = null;
-  broadcastState();
-  res.json({ status: "ok" });
+  console.log("✅ Background image cleared");
+  broadcast();
+  res.json({ success: true });
 });
 
-// State endpoint
-app.get('/state', (req, res) => {
-  res.json({
-    competitionName,
-    categoryName,
-    messageText,
-    warmupGroup,
-    viewMode,
-    backgroundImage,
-    leaderboard,
-    fontSizes   // ALWAYS INCLUDED
-  });
+// -------------------- Endpoints --------------------
+app.get('/state', (req, res) => res.json(currentPayload()));
+
+// ✅ Unified config route
+app.post('/config', (req, res) => {
+  if (req.body.competitionName != null) competitionName = req.body.competitionName;
+  if (req.body.categoryName != null) categoryName = req.body.categoryName;
+
+  if (req.body.scoreboardFont != null) fontSizes.scoreboard = parseInt(req.body.scoreboardFont);
+  if (req.body.warmupFont != null) fontSizes.warmup = parseInt(req.body.warmupFont);
+  if (req.body.messageFont != null) fontSizes.message = parseInt(req.body.messageFont);
+  if (req.body.competitionFont != null) fontSizes.competition = parseInt(req.body.competitionFont);
+  if (req.body.categoryFont != null) fontSizes.category = parseInt(req.body.categoryFont);
+  if (req.body.tableFont != null) fontSizes.table = parseInt(req.body.tableFont);
+  if (req.body.currentNextFont != null) fontSizes.currentNext = parseInt(req.body.currentNextFont);
+
+  res.sendStatus(200);
+  broadcast();
 });
 
-// -------------------------
-// WEBSOCKETS
-// -------------------------
+// ✅ Upload CSV
+app.post('/upload', multer({ dest: 'uploads/' }).single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
 
-wss.on('connection', ws => {
-  // Send full state immediately
-  ws.send(JSON.stringify({
-    competitionName,
-    categoryName,
-    messageText,
-    warmupGroup,
-    viewMode,
-    backgroundImage,
-    leaderboard,
-    fontSizes
-  }));
+  const results = [];
+  fs.createReadStream(req.file.path)
+    .pipe(csv())
+    .on('data', row => results.push(row))
+    .on('end', () => {
+      leaderboard = results.map((row, index) => ({
+        name: row['Skater Name'],
+        club: row['Club'],
+        group: row['Warmup Group'],
+        score: null,
+        order: index + 1
+      }));
+      recomputeCurrentNext();
+      if (warmupGroup != null) {
+        warmupSkaters = leaderboard.filter(p => String(p.group) === String(warmupGroup));
+      }
+
+      // Force warmup view after CSV load
+      viewMode = "warmup";
+
+      console.log("✅ Leaderboard updated from CSV");
+
+      res.json(currentPayload());
+      broadcast();
+    });
 });
 
-// -------------------------
-// START SERVER
-// -------------------------
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// ✅ Update score
+app.post('/update', (req, res) => {
+  const { name, score } = req.body;
+  const player = leaderboard.find(p => p.name === name);
+  if (player) {
+    player.score = score;
+    recomputeCurrentNext();
+    console.log(`✅ Score updated for ${name}: ${score}`);
+    res.json({ success: true });
+    broadcast();
+  } else {
+    res.status(404).json({ error: "Skater not found" });
+  }
 });
+
+// ✅ Warmup group
+app.post('/setWarmupGroup', (req, res) => {
+  warmupGroup = req.body.group ?? null;
+  warmupSkaters = warmupGroup != null
+    ? leaderboard.filter(p => String(p.group) === String(warmupGroup))
+    : [];
+  res.sendStatus(200);
+  broadcast();
+});
+
+// ✅ Message
+app.post('/setMessage', (req, res) => {
+  messageText = req.body.message || "";
+  res.sendStatus(200);
+  broadcast();
+});
+
+// ✅ View mode
+app.post('/setViewMode', (req, res) => {
+  viewMode = req.body.mode || "scoreboard";
+  res.sendStatus(200);
+  broadcast();
+});
+
+// -------------------- Server --------------------
+server.listen(3000, () => console.log("✅ Server running on http://localhost:3000"));
