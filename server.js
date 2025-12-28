@@ -14,6 +14,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+// -------------------- Default Font Sizes --------------------
+const DEFAULT_FONT_SIZES = {
+  scoreboard: 54,
+  warmup: 54,
+  message: 54,
+  competition: 54,
+  category: 54,
+  table: 54,
+  currentNext: 54
+};
+
 // -------------------- State --------------------
 let competitionName = "";
 let categoryName = "";
@@ -25,19 +36,11 @@ let warmupSkaters = [];
 let viewMode = "scoreboard";
 let messageText = "";
 
-// ✅ Background image path (served from /public/backgrounds/)
+// Background image path
 let backgroundImage = null;
 
-// ✅ Font size state
-let fontSizes = {
-  scoreboard: 54,
-  warmup: 54,
-  message: 54,
-  competition: 54,
-  category: 54,
-  table: 54,
-  currentNext: 54
-};
+// Font sizes (start with defaults)
+let fontSizes = { ...DEFAULT_FONT_SIZES };
 
 // -------------------- Helpers --------------------
 function recomputeCurrentNext() {
@@ -56,16 +59,19 @@ function currentPayload() {
     currentSkater,
     nextSkater,
     viewMode,
-    fontSizes,
-    backgroundImage   // ✅ include bg image in payload
+    fontSizes: { ...DEFAULT_FONT_SIZES, ...fontSizes }, // ensure complete
+    backgroundImage
   };
+
   if (viewMode === "warmup") {
     payload.warmupGroup = warmupGroup;
     payload.warmupSkaters = warmupSkaters;
   }
+
   if (viewMode === "message") {
     payload.message = messageText;
   }
+
   return payload;
 }
 
@@ -91,15 +97,12 @@ const bgUpload = multer({
       cb(null, `${Date.now()}_${base}${ext}`);
     }
   }),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10 MB
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 app.post('/uploadBackground', bgUpload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
-  // Save relative path for client usage
   backgroundImage = `/backgrounds/${req.file.filename}`;
   console.log("✅ Background image uploaded:", backgroundImage);
 
@@ -117,28 +120,30 @@ app.post('/clearBackground', (req, res) => {
 // -------------------- Endpoints --------------------
 app.get('/state', (req, res) => res.json(currentPayload()));
 
-// ✅ Unified config route
+// -------------------- Unified Config Route --------------------
 app.post('/config', (req, res) => {
   if (req.body.competitionName != null) competitionName = req.body.competitionName;
   if (req.body.categoryName != null) categoryName = req.body.categoryName;
 
-  if (req.body.scoreboardFont != null) fontSizes.scoreboard = parseInt(req.body.scoreboardFont);
-  if (req.body.warmupFont != null) fontSizes.warmup = parseInt(req.body.warmupFont);
-  if (req.body.messageFont != null) fontSizes.message = parseInt(req.body.messageFont);
-  if (req.body.competitionFont != null) fontSizes.competition = parseInt(req.body.competitionFont);
-  if (req.body.categoryFont != null) fontSizes.category = parseInt(req.body.categoryFont);
-  if (req.body.tableFont != null) fontSizes.table = parseInt(req.body.tableFont);
-  if (req.body.currentNextFont != null) fontSizes.currentNext = parseInt(req.body.currentNextFont);
+  // Merge font sizes safely
+  fontSizes = {
+    ...fontSizes,
+    ...(req.body.scoreboardFont != null && { scoreboard: parseInt(req.body.scoreboardFont) }),
+    ...(req.body.warmupFont != null && { warmup: parseInt(req.body.warmupFont) }),
+    ...(req.body.messageFont != null && { message: parseInt(req.body.messageFont) }),
+    ...(req.body.competitionFont != null && { competition: parseInt(req.body.competitionFont) }),
+    ...(req.body.categoryFont != null && { category: parseInt(req.body.categoryFont) }),
+    ...(req.body.tableFont != null && { table: parseInt(req.body.tableFont) }),
+    ...(req.body.currentNextFont != null && { currentNext: parseInt(req.body.currentNextFont) })
+  };
 
   res.sendStatus(200);
   broadcast();
 });
 
-// ✅ Upload CSV
+// -------------------- Upload CSV --------------------
 app.post('/upload', multer({ dest: 'uploads/' }).single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: "No file uploaded" });
-  }
+  if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
   const results = [];
   fs.createReadStream(req.file.path)
@@ -152,12 +157,13 @@ app.post('/upload', multer({ dest: 'uploads/' }).single('file'), (req, res) => {
         score: null,
         order: index + 1
       }));
+
       recomputeCurrentNext();
+
       if (warmupGroup != null) {
         warmupSkaters = leaderboard.filter(p => String(p.group) === String(warmupGroup));
       }
 
-      // Force warmup view after CSV load
       viewMode = "warmup";
 
       console.log("✅ Leaderboard updated from CSV");
@@ -167,10 +173,11 @@ app.post('/upload', multer({ dest: 'uploads/' }).single('file'), (req, res) => {
     });
 });
 
-// ✅ Update score
+// -------------------- Update Score --------------------
 app.post('/update', (req, res) => {
   const { name, score } = req.body;
   const player = leaderboard.find(p => p.name === name);
+
   if (player) {
     player.score = score;
     recomputeCurrentNext();
@@ -182,7 +189,7 @@ app.post('/update', (req, res) => {
   }
 });
 
-// ✅ Warmup group
+// -------------------- Warmup Group --------------------
 app.post('/setWarmupGroup', (req, res) => {
   warmupGroup = req.body.group ?? null;
   warmupSkaters = warmupGroup != null
@@ -192,14 +199,14 @@ app.post('/setWarmupGroup', (req, res) => {
   broadcast();
 });
 
-// ✅ Message
+// -------------------- Message --------------------
 app.post('/setMessage', (req, res) => {
   messageText = req.body.message || "";
   res.sendStatus(200);
   broadcast();
 });
 
-// ✅ View mode
+// -------------------- View Mode --------------------
 app.post('/setViewMode', (req, res) => {
   viewMode = req.body.mode || "scoreboard";
   res.sendStatus(200);
