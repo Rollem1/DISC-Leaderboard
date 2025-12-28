@@ -37,7 +37,7 @@ let viewMode = "scoreboard";
 let messageText = "";
 
 // Background image path
-let backgroundImage = null;
+backgroundImage = "/backgrounds/Disc_IJS_Background_1_.png";
 
 // Font sizes (start with defaults)
 let fontSizes = { ...DEFAULT_FONT_SIZES };
