@@ -1,101 +1,40 @@
-body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  color: #fff;
-  font-family: Arial, sans-serif;
-}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Overlay</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="mobile.css" media="(max-width: 768px)">
+</head>
 
-/* NEW TWO-LINE TOP BANNER */
-#topBanner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: rgba(34,34,34,0.85);
-  padding: 10px 0;
-  text-align: center;
-  z-index: 9999;
-}
+<body>
 
-#bannerLine1 {
-  font-size: 54px;
-  font-weight: bold;
-  line-height: 1.1;
-}
+  <!-- Two-line top banner -->
+  <div id="topBanner">
+    <div id="bannerLine1"></div> <!-- Competition name -->
+    <div id="bannerLine2"></div> <!-- Category / Warmup / Leaderboard -->
+  </div>
 
-#bannerLine2 {
-  font-size: 54px;
-  line-height: 1.1;
-}
+  <!-- Views -->
+  <div id="scoreboardView" class="view">
+    <div id="currentSkater"></div>
+    <div id="nextSkater"></div>
 
-/* Views */
-.view {
-  padding-top: 150px; /* space for two-line banner */
-  width: 100%;
-  text-align: center;
-}
+    <div id="leaderboard"></div>
 
-/* Current / Next */
-#currentSkater,
-#nextSkater {
-  font-size: 54px;
-  margin: 10px 0;
-}
+    <div id="scrollWrapper">
+      <div id="scrollingList"></div>
+    </div>
+  </div>
 
-/* Leaderboard */
-#leaderboard {
-  width: 90%;
-  margin: 0 auto;
-}
+  <div id="warmupView" class="view">
+    <div id="warmupList" class="scroll-container"></div>
+  </div>
 
-.leaderboard-row {
-  display: grid;
-  grid-template-columns: 0.4fr 0.6fr 2.5fr 0.5fr 1fr;
-  gap: 10px;
-  padding: 10px;
-  margin: 6px 0;
-  background: rgba(34,34,34,0.55);
-  border-radius: 6px;
-  font-size: 54px;
-}
+  <div id="messageView" class="view">
+    <div id="generalMessage"></div>
+  </div>
 
-.top3 {
-  background: rgba(51,51,51,0.55);
-}
-
-.medal-spacer {
-  width: 40px;
-}
-
-/* Scrolling list */
-#scrollWrapper {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-}
-
-#scrollingList {
-  position: absolute;
-  width: 100%;
-}
-
-/* Warmup */
-.scroll-container > div {
-  padding: 10px;
-  margin: 6px auto;
-  width: 90%;
-  background: rgba(34,34,34,0.55);
-  border-radius: 6px;
-  font-size: 54px;
-}
-
-/* Message */
-#generalMessage {
-  width: 90%;
-  margin: 0 auto;
-  padding: 20px;
-  background: rgba(34,34,34,0.55);
-  border-radius: 6px;
-  font-size: 54px;
-}
+  <script src="script.js"></script>
+</body>
+</html>
