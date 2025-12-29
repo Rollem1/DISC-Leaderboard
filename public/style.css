@@ -1,6 +1,5 @@
 :root {
-  --header-h: 100px;   /* global header height */
-  --banner-h: 80px;    /* per-view banner height */
+  --header-h: auto; /* header height now auto based on content */
 }
 
 /* Base */
@@ -36,11 +35,28 @@ html, body {
   justify-content: flex-start;   /* align items at top */
   padding-top: 8px;              /* drop competition name down a few pixels */
 }
-#header h1 {
-  margin: 0 0 4px 0;             /* competition name spacing */
+
+/* Two-line banner at the very top */
+#header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(34,34,34,0.85);
+  z-index: 10000;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 10px 0;
+  margin: 0;
 }
+#header h1,
 #header h2 {
-  margin: 0;                     /* category line no longer used */
+  margin: 0;
+  line-height: 1.1;
 }
 
 /* Per-view banner fixed under header */
@@ -56,21 +72,18 @@ html, body {
   justify-content: center;
   z-index: 9999;
 }
-.fixed-header h2 {
-  color: #FFF;
-  margin: 0;
-  /* font-size removed, JS controls */
-}
 
-/* Each view container reserves space below header + banner */
+
+/* Push content below the new two-line banner */
 .view {
   position: relative;
-  padding-top: calc(var(--header-h) + var(--banner-h) + 20px);
+  padding-top: 140px; /* adjust if needed based on font sizes */
   min-height: 100vh;
   box-sizing: border-box;
-  z-index: 1;
-  background-color: transparent; /* allow background image to show */
+  background-color: transparent;
 }
+
+
 
 /* Current/Next under banner (scoreboard) */
 #currentNextWrapper {
