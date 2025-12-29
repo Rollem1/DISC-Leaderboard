@@ -59,18 +59,9 @@ html, body {
   line-height: 1.1;
 }
 
-/* Per-view banner fixed under header */
+/* Disable old per-view banner completely */
 .fixed-header {
-  position: fixed;
-  top: calc(var(--header-h) + 4px); /* sit just below competition name */
-  left: 0;
-  width: 100%;
-  height: var(--banner-h);
-  background-color: rgba(34,34,34,0.85); /* semi-transparent so bg shows */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+  display: none !important;
 }
 
 
