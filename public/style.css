@@ -69,17 +69,17 @@ html, body {
 }
 
 /* Scoreboard view active → show scoreboardBanner */
-#scoreboardView:not([style*="display:none"]) ~ #header #scoreboardBanner {
+#scoreboardView:not([style*="display:none"]) #scoreboardBanner {
   display: block;
 }
 
 /* Warmup view active → show warmupBanner */
-#warmupView:not([style*="display:none"]) ~ #header #warmupBanner {
+#warmupView:not([style*="display:none"]) #warmupBanner {
   display: block;
 }
 
 /* Message view active → show messageBanner */
-#messageView:not([style*="display:none"]) ~ #header #messageBanner {
+#messageView:not([style*="display:none"]) #messageBanner {
   display: block;
 }
 
