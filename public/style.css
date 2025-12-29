@@ -12,31 +12,17 @@ html, body {
 
   /* Background image support */
   background-color: #111; /* fallback if no image */
-	background-image: var(--overlay-bg, url("/backgrounds/Disc_IJS_Background_1_.png"));
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
+  background-image: var(--overlay-bg, url("/backgrounds/Disc_IJS_Background_1_.png"));
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 
   color: #fff;
 }
 
-/* Global header */
-#header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--header-h);
-  background-color: transparent; /* let background show through */
-  z-index: 10000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;   /* align items at top */
-  padding-top: 8px;              /* drop competition name down a few pixels */
-}
-
-/* Two-line banner at the very top */
+/* ============================
+   TWO-LINE TOP BANNER
+   ============================ */
 #header {
   position: fixed;
   top: 0;
@@ -53,9 +39,20 @@ html, body {
   padding: 10px 0;
   margin: 0;
 }
+
 #header h1,
 #header h2 {
   margin: 0;
+  line-height: 1.1;
+}
+
+/* Show banner text (line 2) inside header */
+#scoreboardBanner,
+#warmupBanner,
+#messageBanner {
+  display: block;
+  margin: 0;
+  padding: 0;
   line-height: 1.1;
 }
 
@@ -63,7 +60,6 @@ html, body {
 .fixed-header {
   display: none !important;
 }
-
 
 /* Push content below the new two-line banner */
 .view {
@@ -74,21 +70,21 @@ html, body {
   background-color: transparent;
 }
 
-
-
-/* Current/Next under banner (scoreboard) */
+/* ============================
+   SCOREBOARD
+   ============================ */
 #currentNextWrapper {
   position: relative;
   margin: 10px auto 0;
   width: 90%;
   max-width: 1350px;
-  background-color: rgba(17,17,17,0.85); /* translucent block */
+  background-color: rgba(17,17,17,0.85);
   padding: 10px 0;
 }
+
 #currentSkater, #nextSkater {
   font-weight: bold;
   margin: 6px 0;
-  /* font-size removed, JS controls */
 }
 
 /* Leaderboard block */
@@ -106,28 +102,30 @@ html, body {
   gap: 10px;
   margin: 5px auto;
   padding: 10px;
-  background: rgba(34,34,34,0.9); /* translucent so bg peeks through */
+  background: rgba(34,34,34,0.9);
   border-radius: 5px;
   color: #fff;
   width: 90%;
   max-width: 1350px;
   white-space: nowrap;
   overflow: hidden;
-  /* font-size removed, JS controls */
 }
+
 .leaderboard-row img {
   width: 40px;
   height: 40px;
   justify-self: center;
 }
+
 .leaderboard-row .position { text-align: center; font-weight: bold; }
 .leaderboard-row .name { text-align: left; }
 .leaderboard-row .club { text-align: left; color: #ccc; }
 .leaderboard-row .score { text-align: right; font-weight: bold; }
+
 .top3 {
   background: rgba(51,51,51,0.9);
-  /* font-size removed, JS controls */
 }
+
 .medal-spacer { display: inline-block; width: 40px; }
 
 /* Scrolling area below leaderboard */
@@ -137,26 +135,33 @@ html, body {
   overflow: hidden;
   z-index: 0;
 }
+
 .scrolling { position: relative; will-change: transform; }
+
 @keyframes scrollOnce {
   0% { transform: translateY(0); }
   100% { transform: translateY(-100%); }
 }
 
-/* Warm-up view scroller area */
+/* ============================
+   WARMUP VIEW
+   ============================ */
+
+/* FIXED HEIGHT BELOW NEW HEADER */
 .scroll-container {
   position: relative;
   width: 100%;
   overflow: hidden;
-  height: calc(100vh - (var(--header-h) + var(--banner-h) + 40px));
+  height: calc(100vh - 140px); /* matches .view padding-top */
 }
 
-/* Center the warm-up list and rows */
+/* Warmup list */
 #warmupList {
   display: flex;
   flex-direction: column;
-  align-items: center;          /* center horizontally */
+  align-items: center;
 }
+
 #warmupList > div {
   margin: 5px;
   padding: 10px;
@@ -165,29 +170,35 @@ html, body {
   color: #fff;
   width: 90%;
   max-width: 1000px;
-  text-align: center;           /* center text inside row */
-  /* font-size removed, JS controls */
+  text-align: center;
 }
-#warmupList > div:nth-child(even) { background: rgba(51,51,51,0.9); }
 
-/* Warm-up scrolling text */
+#warmupList > div:nth-child(even) {
+  background: rgba(51,51,51,0.9);
+}
+
+/* Warmup scrolling animation */
 .scrolling-text {
   display: inline-block;
   will-change: transform;
   animation: scroll-up linear infinite;
 }
+
 @keyframes scroll-up {
   0% { transform: translateY(0); }
   100% { transform: translateY(-50%); }
 }
 
-/* Message view */
+/* ============================
+   MESSAGE VIEW
+   ============================ */
 #messageView {
-  display: none;                /* toggled by JS to flex */
+  display: none;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
 }
+
 #generalMessage {
   max-width: 80%;
   text-align: center;
@@ -195,27 +206,27 @@ html, body {
   background: rgba(34,34,34,0.9);
   padding: 20px;
   border-radius: 8px;
-  margin-top: 20px;             /* spacing below banner */
-  /* font-size removed, JS controls */
+  margin-top: 20px;
 }
 
-/* Make file input wider */
+/* ============================
+   ADMIN PANEL (unchanged)
+   ============================ */
 input[type="file"].admin-input {
-  width: 500px;   /* or 100% if you want it to stretch */
+  width: 500px;
 }
 
 #messageText {
-  display: block;        /* ensures it takes its own line */
-  margin: 0 auto 10px;   /* auto left/right margins center it */
-  width: 600px;          /* or whatever width you prefer */
-  height: 100px;         /* taller box */
-  resize: vertical;      /* allow manual resizing */
-  text-align: center;    /* centers the text inside too */
+  display: block;
+  margin: 0 auto 10px;
+  width: 600px;
+  height: 100px;
+  resize: vertical;
+  text-align: center;
 }
 
-/* Admin font settings popup */
 .popup {
-  display: none;              /* hidden by default */
+  display: none;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -229,5 +240,6 @@ input[type="file"].admin-input {
   text-align: left;
   box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
+
 .popup h2 { margin-top: 0; }
 .popup label { display: block; margin: 10px 0; }
