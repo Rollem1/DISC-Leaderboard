@@ -6,9 +6,25 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const csv = require('csv-parser');
+const ADMIN_PASSWORD = "changeme123";   // pick your own password
 
 const app = express();
 app.use(bodyParser.json());
+const ADMIN_PASSWORD = "changeme123";
+
+app.get('/admin', (req, res) => {
+  const pass = req.query.p;
+
+  if (pass !== ADMIN_PASSWORD) {
+    return res.status(401).send(`
+      <h1>Unauthorized</h1>
+      <p>You must supply a valid password to access the admin panel.</p>
+      <p>Try: /admin?p=${ADMIN_PASSWORD}</p>
+    `);
+  }
+
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 const server = http.createServer(app);
