@@ -31,34 +31,30 @@ body::before {
   position: fixed;
   top: 0; left: 0;
   width: 100%;
-  height: var(--header-h);
+  height: auto;              /* FIXED */
   z-index: 10000;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding-top: 6px;
+  padding-bottom: 6px;       /* NEW */
 }
 
 #header h1 {
   margin: 0 0 4px;
-  font-size: 18px; /* keep existing mobile font sizes */
+  font-size: 18px;
 }
 
 #header h2 {
   margin: 0;
-  font-size: 16px; /* keep existing mobile font sizes */
-}
-
-/* ❌ Old per-view banner bar – hide it entirely */
-.fixed-header {
-  display: none;
+  font-size: 16px;
 }
 
 /* Views (content starts below unified header) */
 .view {
   position: relative;
-  padding-top: calc(var(--header-h) + 15px);
+  padding-top: 90px;         /* FIXED */
   min-height: 100vh;
   box-sizing: border-box;
   background: transparent !important;
