@@ -41,16 +41,17 @@ function renderScoreboardView(data) {
   document.getElementById('currentSkater').textContent =
     data.currentSkater ? `Skating now ${data.currentSkater.name} (${data.currentSkater.club})` : '';
 
-  if (data.nextSkater) {
-    const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
-      .filter(p => p.score == null);
+const nextEl = document.getElementById('nextSkater');
 
-    const remainingCount = data.currentSkater
-      ? remaining.filter(p => p.name !== data.currentSkater.name).length
-      : remaining.length;
+if (data.nextSkater) {
+  const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
+    .filter(p => p.score == null);
 
-    document.getElementById('nextSkater').textContent =
-      `${remainingCount} to skate – Next ${data.nextSkater.name}`;
+  const remainingCount = data.currentSkater
+    ? remaining.filter(p => p.name !== data.currentSkater.name).length
+    : remaining.length;
+
+  nextEl.textContent = `${remainingCount} to skate – Next ${data.nextSkater.name}`;
 } else {
   // Only show "Final Standing" when there is NO current skater either
   if (!data.currentSkater) {
