@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html class="admin-page">
 <head>
   <meta charset="UTF-8">
   <title>Admin Panel</title>
   <link rel="stylesheet" href="style.css">
 
   <style>
-    /* Admin page background override */
+    /* Full background override */
+    html.admin-page,
+    body.admin-page {
+      background: #0033aa !important;
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    html.admin-page::before,
     body.admin-page::before {
       content: none !important;
       background: none !important;
@@ -14,12 +22,6 @@
       width: 0 !important;
       height: 0 !important;
       position: static !important;
-    }
-
-    body.admin-page {
-      background: #0033aa !important; /* Royal blue */
-      color: #fff;
-      font-family: Arial, sans-serif;
     }
 
     /* Inputs */
@@ -35,7 +37,6 @@
       box-sizing: border-box;
     }
 
-    /* Score input boxes */
     input[id^="score-"] {
       width: 90px;
       padding: 6px 8px;
@@ -43,7 +44,6 @@
       box-sizing: border-box;
     }
 
-    /* Buttons */
     .admin-button {
       padding: 8px 16px;
       font-size: 16px;
@@ -70,10 +70,7 @@
       padding: 10px;
       border-radius: 5px;
     }
-    .admin-row strong { flex: 2; text-align: left; }
-    .admin-row span { flex: 1; color: #ccc; text-align: left; }
 
-    /* Popup dialog */
     .popup {
       display: none;
       position: fixed;
@@ -90,10 +87,13 @@
       text-align: left;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
+
     .popup h2 { margin-top: 0; }
     .popup label { display:block; margin:8px 0; }
   </style>
 </head>
+
+
 
 <body class="admin-page">
   <h1>Admin Panel</h1>
