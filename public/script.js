@@ -192,21 +192,16 @@ requestAnimationFrame(() => {
     return;
   }
 
-  const duration = contentHeight / 30; // your existing speed
+  const duration = contentHeight / 30;
 
-  // Reset any previous animation
   scrollingDiv.style.animation = 'none';
   scrollingDiv.style.transform = 'translateY(0)';
 
-  // Start scroll after 3-second pause
   setTimeout(() => {
     scrollingDiv.style.animation = `scrollOnce ${duration}s linear`;
   }, 3000);
 
-  // When animation ends, restart cycle with pause
-  scrollingDiv.addEventListener('animationend', function handler() {
-    scrollingDiv.removeEventListener('animationend', handler);
-
+  scrollingDiv.addEventListener('animationend', () => {
     scrollingDiv.style.animation = 'none';
     scrollingDiv.style.transform = 'translateY(0)';
 

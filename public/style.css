@@ -117,7 +117,7 @@ body[data-view="message"] #messageBanner {
 /* Leaderboard rows */
 .leaderboard-row {
   display: grid;
-  grid-template-columns: 50px 50px 1fr 120px 170px;
+  grid-template-columns: 50px 55px 1fr 115px 170px;
   align-items: center;
   gap: 10px;
   margin: 5px auto;
@@ -132,8 +132,8 @@ body[data-view="message"] #messageBanner {
 }
 
 .leaderboard-row img {
-  width: 40px;
-  height: 40px;
+  width: 70px;
+  height: 70px;
   justify-self: center;
 }
 
@@ -146,7 +146,7 @@ body[data-view="message"] #messageBanner {
   background: rgba(51,51,51,0.9);
 }
 
-.medal-spacer { display: inline-block; width: 40px; }
+.medal-spacer { display: inline-block; width: 70px; }
 
 /* Scrolling area below leaderboard */
 .scroll-wrapper {
