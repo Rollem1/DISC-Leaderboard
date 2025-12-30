@@ -31,6 +31,18 @@
     }
     .popup h2 { margin-top: 0; }
     .popup label { display:block; margin:8px 0; }
+	
+		/* Unified dialog size + styling */
+	.admin-dialog {
+	  width: 420px;
+	  max-width: 90%;
+	  background: #222;
+	  padding: 20px;
+	  border-radius: 8px;
+	  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+	  color: #fff;
+	}
+
   </style>
 </head>
 
@@ -49,13 +61,15 @@
     <button type="submit" class="admin-button">Upload</button>
   </form>
 
-  <h3>Background Image</h3>
-  <form id="bgForm" enctype="multipart/form-data">
-    <input type="file" name="file" accept="image/*">
-    <button type="submit">Upload Background</button>
-  </form>
+	<form id="bgForm" enctype="multipart/form-data">
+	  <input type="file" name="file" accept="image/*" class="admin-input">
+	  <button type="submit" class="admin-button">Upload Background</button>
 
-  <button id="clearBg">Clear Background</button>
+	</form>
+
+	<button id="clearBg" class="admin-button">Clear Background</button>
+
+
 
   <h2>View Mode</h2>
   <button class="admin-button" onclick="setViewMode('scoreboard')">Show Scoreboard</button>
@@ -82,7 +96,7 @@
   <h2>Font Settings</h2>
   <button class="admin-button" onclick="openFontPopup()">Open Font Settings</button>
 
-  <div id="fontPopup" class="popup">
+  <div id="fontPopup" class="popup admin-dialog">
     <h2>Font Size Settings</h2>
 
     <label>Competition Heading Font Size:
