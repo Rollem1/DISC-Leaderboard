@@ -26,19 +26,27 @@ body::before {
   z-index: -1;
 }
 
-/* Unified header (competition + second line from JS) */
 #header {
   position: fixed;
   top: 0; left: 0;
   width: 100%;
-  height: auto;              /* FIXED */
+  height: auto;
   z-index: 10000;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   padding-top: 6px;
-  padding-bottom: 6px;       /* NEW */
+  padding-bottom: 6px;
+  background: rgba(34,34,34,0.85);   /* ⭐ NEW: makes the banner visible */
+}
+
+.view {
+  position: relative;
+  padding-top: 70px;                 /* ⭐ REDUCED: fixes content being too low */
+  min-height: 100vh;
+  box-sizing: border-box;
+  background: transparent !important;
 }
 
 #header h1 {
@@ -54,7 +62,7 @@ body::before {
 /* Views (content starts below unified header) */
 .view {
   position: relative;
-  padding-top: 90px;         /* FIXED */
+  padding-top: 60px;         /* FIXED */
   min-height: 100vh;
   box-sizing: border-box;
   background: transparent !important;
