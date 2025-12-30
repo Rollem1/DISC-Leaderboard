@@ -39,7 +39,7 @@ function renderScoreboardView(data) {
     categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
 
   document.getElementById('currentSkater').textContent =
-    data.currentSkater ? `Current skater: ${data.currentSkater.name} (${data.currentSkater.club})` : '';
+    data.currentSkater ? `Skating now ${data.currentSkater.name} (${data.currentSkater.club})` : '';
 
   if (data.nextSkater) {
     const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
@@ -50,16 +50,16 @@ function renderScoreboardView(data) {
       : remaining.length;
 
     document.getElementById('nextSkater').textContent =
-      `${remainingCount} to skate – Skating next: ${data.nextSkater.name}`;
+      `${remainingCount} to skate – Next ${data.nextSkater.name}`;
   } else {
-    document.getElementById('nextSkater').textContent = '';
+    document.getElementById('nextSkater').textContent = 'Final Standing';
   }
 
   const leaderboardDiv = document.getElementById('leaderboard');
   leaderboardDiv.innerHTML = '';
 
   const lb = Array.isArray(data.leaderboard) ? data.leaderboard : [];
-  const specials = ['DNF', 'DQ', 'WD'];
+  const specials = ['DQ', 'WD'];
 
   const scored = lb.filter(p => p.score != null).sort((a, b) => {
     const aSpecial = specials.includes(String(a.score).toUpperCase());

@@ -104,7 +104,7 @@ function renderScoreboardView(data) {
 
   // Current / Next
   currentEl.textContent = data.currentSkater
-    ? `Current Skater: ${data.currentSkater.name} (${data.currentSkater.club})`
+    ? `Skating now ${data.currentSkater.name} (${data.currentSkater.club})`
     : '';
 
   if (data.nextSkater) {
@@ -113,9 +113,9 @@ function renderScoreboardView(data) {
     const remainingCount = data.currentSkater
       ? remaining.filter(p => p.name !== data.currentSkater.name).length
       : remaining.length;
-    nextEl.textContent = `${remainingCount} to skate - Skating next ${data.nextSkater.name}`;
+    nextEl.textContent = `${remainingCount} to skate - Next ${data.nextSkater.name}`;
   } else {
-    nextEl.textContent = '';
+    nextEl.textContent = 'Final Standing';
   }
 
   // Build leaderboard
@@ -123,7 +123,7 @@ function renderScoreboardView(data) {
   scrollingDiv.innerHTML = '';
 
   const lb = Array.isArray(data.leaderboard) ? data.leaderboard : [];
-  const specials = ['DNF', 'DQ', 'WD'];
+  const specials = ['DQ', 'WD'];
 
   const scored = lb.filter(p => p.score != null).sort((a, b) => {
     const aSpecial = specials.includes(String(a.score).toUpperCase());
@@ -217,11 +217,32 @@ function renderWarmupView(data) {
   warmupView.style.display = 'block';
 
   // Banner: Category + " Warmup {Group}"
-  if (warmupBanner) {
-    const categoryText = data.categoryName || data.category || '';
-    const groupPart = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : ' Warmup';
-    warmupBanner.textContent = categoryText ? `${categoryText}${groupPart}` : `Warmup${data.warmupGroup ? ' ' + data.warmupGroup : ''}`;
-  }
+  //if (warmupBanner) {
+  //  const categoryText = data.categoryName || data.category || '';
+  //  const groupPart = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : ' Warmup';
+  //  warmupBanner.textContent = categoryText ? `${categoryText}${groupPart}` : `Warmup${data.warmupGroup ? ' ' + data.warmupGroup : ''}`;
+  //}
+  
+  // Banner: Category + " Warmup {Group}"
+if (warmupBanner) {
+  const categoryText = data.categoryName || data.category || '';
+
+  // Determine how many warm-up groups exist in the CSV
+  const uniqueGroups = new Set(
+    (data.leaderboard || []).map(s => s.group)
+  );
+
+  // If only one warm-up group exists, omit the number
+  const showGroupNumber = uniqueGroups.size > 1;
+
+  const groupPart = showGroupNumber
+    ? ` Warmup ${data.warmupGroup}`
+    : ` Warmup`;
+
+  warmupBanner.textContent = categoryText
+    ? `${categoryText}${groupPart}`
+    : `Warmup${showGroupNumber ? ' ' + data.warmupGroup : ''}`;
+}
 
   // Optional label under banner (keep or remove)
   warmupGroupLabel.textContent = data.warmupGroup ? `Group ${data.warmupGroup}` : '';
