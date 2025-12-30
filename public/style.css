@@ -46,7 +46,7 @@ html, body {
   line-height: 1.1;
 }
 
-/* Move banner text into the top header visually */
+/* Banner text inside header */
 #scoreboardBanner,
 #warmupBanner,
 #messageBanner {
@@ -68,21 +68,16 @@ html, body {
   display: none;
 }
 
-/* Scoreboard view active → show scoreboardBanner */
-#scoreboardView:not([style*="display:none"]) ~ * #scoreboardBanner,
-#scoreboardView:not([style*="display:none"]) #scoreboardBanner {
+/* Show correct banner based on body data attribute */
+body[data-view="scoreboard"] #scoreboardBanner {
   display: block;
 }
 
-/* Warmup view active → show warmupBanner */
-#warmupView:not([style*="display:none"]) ~ * #warmupBanner,
-#warmupView:not([style*="display:none"]) #warmupBanner {
+body[data-view="warmup"] #warmupBanner {
   display: block;
 }
 
-/* Message view active → show messageBanner */
-#messageView:not([style*="display:none"]) ~ * #messageBanner,
-#messageView:not([style*="display:none"]) #messageBanner {
+body[data-view="message"] #messageBanner {
   display: block;
 }
 

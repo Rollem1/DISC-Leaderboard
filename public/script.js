@@ -45,9 +45,14 @@ function positionScrollWrapper() {
 }
 
 function renderFromState(data) {
+  // ⭐ Tell CSS which view is active
+  document.body.dataset.view = data.viewMode;
+
   // Competition name always visible (category no longer displayed here)
   if (competitionEl) competitionEl.textContent = data.competitionName || '';
   if (categoryEl) categoryEl.textContent = '';
+
+
 
   // ✅ Background image (CSS variable consumed by CSS)
 	if (data.backgroundImage) {
