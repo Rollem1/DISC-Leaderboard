@@ -51,9 +51,14 @@ function renderScoreboardView(data) {
 
     document.getElementById('nextSkater').textContent =
       `${remainingCount} to skate – Next ${data.nextSkater.name}`;
+} else {
+  // Only show "Final Standing" when there is NO current skater either
+  if (!data.currentSkater) {
+    nextEl.textContent = 'Final Standing';
   } else {
-    document.getElementById('nextSkater').textContent = 'Final Standing';
+    nextEl.textContent = '';  // Still someone skating, so no final yet
   }
+}
 
   const leaderboardDiv = document.getElementById('leaderboard');
   leaderboardDiv.innerHTML = '';
@@ -108,15 +113,50 @@ function renderScoreboardView(data) {
   });
 }
 
+
+//function renderWarmupView(data) {
+//  hideAllViews();
+//  document.body.dataset.view = 'warmup';   // ⭐ REQUIRED
+//  document.getElementById('warmupView').style.display = 'block';
+
+//  const categoryText = data.categoryName || "";
+//  const groupText = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : " Warmup";
+//  document.getElementById('warmupBanner').textContent =
+//    categoryText ? `${categoryText}${groupText}` : `Warmup ${data.warmupGroup || ""}`;
+
+//  const warmupList = document.getElementById('warmupList');
+//  warmupList.innerHTML = '';
+
+//  (data.warmupSkaters || []).forEach(skater => {
+ //   const row = document.createElement('div');
+//    row.textContent = `${skater.order || ''} ${skater.name} (${skater.club})`;
+//    warmupList.appendChild(row);
+//  });
+//}
+
 function renderWarmupView(data) {
   hideAllViews();
   document.body.dataset.view = 'warmup';   // ⭐ REQUIRED
   document.getElementById('warmupView').style.display = 'block';
 
   const categoryText = data.categoryName || "";
-  const groupText = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : " Warmup";
+
+  // Determine how many warm-up groups exist in the CSV
+  const uniqueGroups = new Set(
+    (data.leaderboard || []).map(s => s.group)
+  );
+
+  // If only one warm-up group exists, omit the number
+  const showGroupNumber = uniqueGroups.size > 1;
+
+  const groupText = showGroupNumber
+    ? ` Warmup ${data.warmupGroup}`
+    : ` Warmup`;
+
   document.getElementById('warmupBanner').textContent =
-    categoryText ? `${categoryText}${groupText}` : `Warmup ${data.warmupGroup || ""}`;
+    categoryText
+      ? `${categoryText}${groupText}`
+      : `Warmup${showGroupNumber ? ' ' + data.warmupGroup : ''}`;
 
   const warmupList = document.getElementById('warmupList');
   warmupList.innerHTML = '';

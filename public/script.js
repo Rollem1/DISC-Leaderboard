@@ -114,9 +114,14 @@ function renderScoreboardView(data) {
       ? remaining.filter(p => p.name !== data.currentSkater.name).length
       : remaining.length;
     nextEl.textContent = `${remainingCount} to skate - Next ${data.nextSkater.name}`;
-  } else {
+} else {
+  // Only show "Final Standing" when there is NO current skater either
+  if (!data.currentSkater) {
     nextEl.textContent = 'Final Standing';
+  } else {
+    nextEl.textContent = '';  // Still someone skating, so no final yet
   }
+}
 
   // Build leaderboard
   leaderboardDiv.innerHTML = '';
@@ -215,13 +220,6 @@ requestAnimationFrame(() => {
 function renderWarmupView(data) {
   hideAllViews();
   warmupView.style.display = 'block';
-
-  // Banner: Category + " Warmup {Group}"
-  //if (warmupBanner) {
-  //  const categoryText = data.categoryName || data.category || '';
-  //  const groupPart = data.warmupGroup ? ` Warmup ${data.warmupGroup}` : ' Warmup';
-  //  warmupBanner.textContent = categoryText ? `${categoryText}${groupPart}` : `Warmup${data.warmupGroup ? ' ' + data.warmupGroup : ''}`;
-  //}
   
   // Banner: Category + " Warmup {Group}"
 if (warmupBanner) {

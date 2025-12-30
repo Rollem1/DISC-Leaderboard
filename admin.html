@@ -252,7 +252,7 @@
         div.innerHTML = `
           <strong>${skater.name}</strong>
           <span>${skater.club} [Group ${skater.group}]</span>
-          <input type="text" id="score-${safeId}" class="admin-input" placeholder="Score or DNF/DQ">
+          <input type="text" id="score-${safeId}" class="admin-input" placeholder="Score/WD">
           <button class="admin-button" onclick="updateScore('${skater.name}', 'score-${safeId}')">Update</button>
         `;
         container.appendChild(div);
