@@ -39,7 +39,7 @@ function renderScoreboardView(data) {
     categoryText ? `${categoryText} Leaderboard` : 'Leaderboard';
 
   document.getElementById('currentSkater').textContent =
-    data.currentSkater ? `Current: ${data.currentSkater.name} (${data.currentSkater.club})` : '';
+    data.currentSkater ? `Current skater: ${data.currentSkater.name} (${data.currentSkater.club})` : '';
 
   if (data.nextSkater) {
     const remaining = (Array.isArray(data.leaderboard) ? data.leaderboard : [])
@@ -50,7 +50,7 @@ function renderScoreboardView(data) {
       : remaining.length;
 
     document.getElementById('nextSkater').textContent =
-      `${remainingCount} to skate – Next: ${data.nextSkater.name}`;
+      `${remainingCount} to skate – Skating next: ${data.nextSkater.name}`;
   } else {
     document.getElementById('nextSkater').textContent = '';
   }
