@@ -16,7 +16,13 @@
     .admin-row { display: flex; align-items: center; gap: 10px; margin: 10px auto; width: 90%; max-width: 800px; background: #222; padding: 10px; border-radius: 5px; }
     .admin-row strong { flex: 2; text-align: left; }
     .admin-row span { flex: 1; color: #ccc; text-align: left; }
-
+	/* Make score input boxes small and tidy */
+	input[id^="score-"] {
+	  width: 90px;          /* perfect for scores like 123.23 */
+	  padding: 6px 8px;
+	  box-sizing: border-box;
+	  text-align: center;   /* optional but looks great */
+	}
     .popup {
       display: none;
       position: fixed;
