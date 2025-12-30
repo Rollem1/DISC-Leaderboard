@@ -43,10 +43,15 @@ body::before {
 
 .view {
   position: relative;
-  padding-top: 70px;                 /* ⭐ REDUCED: fixes content being too low */
+  padding-top: 60px;                 /* ⭐ REDUCED: fixes content being too low */
   min-height: 100vh;
   box-sizing: border-box;
   background: transparent !important;
+}
+
+/* Warm-up view should sit directly under the header */
+#warmupView {
+  padding-top: 0;
 }
 
 #header h1 {
@@ -59,19 +64,9 @@ body::before {
   font-size: 16px;
 }
 
-/* Views (content starts below unified header) */
-.view {
-  position: relative;
-  padding-top: 60px;         /* FIXED */
-  min-height: 100vh;
-  box-sizing: border-box;
-  background: transparent !important;
-}
-
-/* Prevent scroll content from appearing under header */
 .scroll-container,
 #scrollWrapper {
-  padding-top: var(--header-h);
+  padding-top: 0;     /* ⭐ FIX */
   box-sizing: border-box;
   overflow: hidden;
 }
