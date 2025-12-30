@@ -18,7 +18,6 @@ app.get('/admin', (req, res) => {
     return res.status(401).send(`
       <h1>Unauthorized</h1>
       <p>You must supply a valid password to access the admin panel.</p>
-      <p>Try: /admin?p=${ADMIN_PASSWORD}</p>
     `);
   }
 

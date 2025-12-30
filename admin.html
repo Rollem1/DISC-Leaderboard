@@ -6,23 +6,74 @@
   <link rel="stylesheet" href="style.css">
 
   <style>
-	  body.admin-page {
-	  background: #111;
-	}
-    .admin-input { width:420px; max-width:50%; padding: 8px 12px; font-size: 16px; border-radius: 4px; border: 1px solid #555; background: #111; color: #fff; }
-	.admin-button { padding: 8px 16px; font-size: 16px; background: #0ff; color: #000; border: none; border-radius: 4px; cursor: pointer; min-width: 180px; text-align: center; }
+    /* Admin page background override */
+    body.admin-page::before {
+      content: none !important;
+      background: none !important;
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      position: static !important;
+    }
+
+    body.admin-page {
+      background: #0033aa !important; /* Royal blue */
+      color: #fff;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Inputs */
+    .admin-input {
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #555;
+      background: #111;
+      color: #fff;
+      width: 420px;
+      max-width: 90%;
+      box-sizing: border-box;
+    }
+
+    /* Score input boxes */
+    input[id^="score-"] {
+      width: 90px;
+      padding: 6px 8px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    /* Buttons */
+    .admin-button {
+      padding: 8px 16px;
+      font-size: 16px;
+      background: #0ff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 180px;
+      text-align: center;
+    }
     .admin-button:hover { background: #0cc; }
+
     form, select, button { margin: 10px 0; }
-    .admin-row { display: flex; align-items: center; gap: 10px; margin: 10px auto; width: 90%; max-width: 800px; background: #222; padding: 10px; border-radius: 5px; }
+
+    .admin-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px auto;
+      width: 90%;
+      max-width: 800px;
+      background: #222;
+      padding: 10px;
+      border-radius: 5px;
+    }
     .admin-row strong { flex: 2; text-align: left; }
     .admin-row span { flex: 1; color: #ccc; text-align: left; }
-	/* Make score input boxes small and tidy */
-	input[id^="score-"] {
-	  width: 90px;          /* perfect for scores like 123.23 */
-	  padding: 6px 8px;
-	  box-sizing: border-box;
-	  text-align: center;   /* optional but looks great */
-	}
+
+    /* Popup dialog */
     .popup {
       display: none;
       position: fixed;
@@ -34,24 +85,13 @@
       border-radius: 8px;
       z-index: 1000;
       color: #fff;
-      width: 340px;
+      width: 420px;
+      max-width: 90%;
       text-align: left;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
     .popup h2 { margin-top: 0; }
     .popup label { display:block; margin:8px 0; }
-	
-		/* Unified dialog size + styling */
-	.admin-dialog {
-	  width: 420px;
-	  max-width: 90%;
-	  background: #222;
-	  padding: 20px;
-	  border-radius: 8px;
-	  box-shadow: 0 0 10px rgba(0,0,0,0.5);
-	  color: #fff;
-	}
-
   </style>
 </head>
 
@@ -64,32 +104,28 @@
     <button type="submit" class="admin-button">Update</button>
   </form>
 
-  <h2>Background Image</h2>
-	<form id="bgForm" enctype="multipart/form-data">
-	  <input type="file" name="file" accept="image/*" class="admin-input">
-	  <button type="submit" class="admin-button">Upload Background</button>
-	  <button id="clearBg" class="admin-button">Clear Background</button>
-	</form>
-
-  <h2>General Message</h2>
-  <textarea id="messageText" class="admin-input" rows="3"
-    placeholder="Enter message e.g. Back after lunch at 14:30"></textarea>
-  <button class="admin-button" onclick="updateMessage()">Update Message</button>
-
-
   <h2>Upload Skater List (CSV)</h2>
   <form id="uploadForm" enctype="multipart/form-data">
     <input type="file" id="file" name="file" accept=".csv" required class="admin-input">
     <button type="submit" class="admin-button">Upload</button>
   </form>
 
+  <form id="bgForm" enctype="multipart/form-data">
+    <input type="file" name="file" accept="image/*" class="admin-input">
+    <button type="submit" class="admin-button">Upload Background</button>
+  </form>
+
+  <button id="clearBg" class="admin-button">Clear Background</button>
 
   <h2>View Mode</h2>
   <button class="admin-button" onclick="setViewMode('scoreboard')">Show Scoreboard</button>
   <button class="admin-button" onclick="setViewMode('warmup')">Show Warm-Up</button>
   <button class="admin-button" onclick="setViewMode('message')">Show Message</button>
 
-
+  <h2>General Message</h2>
+  <textarea id="messageText" class="admin-input" rows="3"
+    placeholder="Enter message e.g. Back after lunch at 14:30"></textarea>
+  <button class="admin-button" onclick="updateMessage()">Update Message</button>
 
   <h2>Select Warm-Up Group</h2>
   <select id="warmupSelect" onchange="setWarmupGroup()" class="admin-input">
@@ -106,7 +142,7 @@
   <h2>Font Settings</h2>
   <button class="admin-button" onclick="openFontPopup()">Open Font Settings</button>
 
-  <div id="fontPopup" class="popup admin-dialog">
+  <div id="fontPopup" class="popup">
     <h2>Font Size Settings</h2>
 
     <label>Competition Heading Font Size:
@@ -139,112 +175,6 @@
   <p id="status"></p>
 
   <script>
-    // -------------------------
-    // BASIC CONFIG
-    // -------------------------
-
-    document.getElementById('configForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const competitionName = document.getElementById('competition').value;
-      try {
-        await fetch('/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ competitionName })
-        });
-        document.getElementById('status').textContent = 'Competition settings updated!';
-      } catch (err) {
-        document.getElementById('status').textContent = 'Error updating competition: ' + err.message;
-      }
-    });
-
-    // -------------------------
-    // CSV UPLOAD
-    // -------------------------
-
-    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const fileInput = document.getElementById('file');
-      const file = fileInput.files[0];
-      if (!file) {
-        document.getElementById('status').textContent = 'Please select a CSV file first.';
-        return;
-      }
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-        const res = await fetch('/upload', { method: 'POST', body: formData });
-        if (!res.ok) throw new Error('Upload failed');
-        const data = await res.json();
-
-        const categoryName = file.name.replace(/\.[^/.]+$/, "");
-        await fetch('/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ categoryName })
-        });
-
-        renderSkaters(data.leaderboard || []);
-        document.getElementById('status').textContent =
-          `Uploaded file: ${file.name}, ${data.leaderboard?.length || 0} skaters!`;
-      } catch (err) {
-        document.getElementById('status').textContent = 'Upload error: ' + err.message;
-      }
-    });
-
-    function renderSkaters(skaters) {
-      const container = document.getElementById('skaterList');
-      container.innerHTML = '';
-      (skaters || []).forEach(skater => {
-        const safeId = skater.name.replace(/[^a-zA-Z0-9_-]/g, '_');
-        const div = document.createElement('div');
-        div.classList.add('admin-row');
-        div.innerHTML = `
-          <strong>${skater.name}</strong>
-          <span>${skater.club} [Group ${skater.group}]</span>
-          <input type="text" id="score-${safeId}" class="admin-input" placeholder="Score or DNF/DQ">
-          <button class="admin-button" onclick="updateScore('${skater.name}', 'score-${safeId}')">Update</button>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    async function updateScore(name, inputId) {
-      const score = document.getElementById(inputId).value;
-      try {
-        await fetch('/update', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, score })
-        });
-        document.getElementById('status').textContent = `Score updated for ${name}!`;
-      } catch (err) {
-        document.getElementById('status').textContent = 'Error updating score: ' + err.message;
-      }
-    }
-
-    // -------------------------
-    // VIEW MODE
-    // -------------------------
-
-    async function setViewMode(mode) {
-      try {
-        await fetch('/setViewMode', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mode })
-        });
-        document.getElementById('status').textContent = `View mode set to ${mode}`;
-      } catch (err) {
-        document.getElementById('status').textContent = 'Error setting view mode: ' + err.message;
-      }
-    }
-
-    // -------------------------
-    // WARMUP GROUP
-    // -------------------------
-
     async function setWarmupGroup() {
       const group = document.getElementById('warmupSelect').value;
       try {
@@ -260,10 +190,6 @@
       }
     }
 
-    // -------------------------
-    // MESSAGE
-    // -------------------------
-
     async function updateMessage() {
       const message = document.getElementById('messageText').value;
       try {
@@ -278,10 +204,6 @@
         document.getElementById('status').textContent = 'Error updating message: ' + err.message;
       }
     }
-
-    // -------------------------
-    // FONT POPUP
-    // -------------------------
 
     function openFontPopup() {
       document.getElementById('fontPopup').style.display = 'block';
@@ -319,10 +241,6 @@
       document.getElementById('status').textContent = 'Font sizes updated!';
     }
 
-    // -------------------------
-    // BACKGROUND
-    // -------------------------
-
     document.getElementById('bgForm').addEventListener('submit', async e => {
       e.preventDefault();
       const formData = new FormData(e.target);
@@ -344,17 +262,31 @@
       }
     });
 
-    // -------------------------
-    // INITIAL LOAD BEHAVIOUR
-    // -------------------------
+    /* CSV UPLOAD — RESET WARMUP GROUP */
+    document.getElementById('uploadForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      try {
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        if (!res.ok) throw new Error('Upload failed');
 
+        document.getElementById('status').textContent = `Upload successful!`;
+
+        // Reset warmup group to 1 and broadcast
+        document.getElementById('warmupSelect').value = "1";
+        setWarmupGroup();
+
+      } catch (err) {
+        document.getElementById('status').textContent = 'Upload error: ' + err.message;
+      }
+    });
+
+    /* INITIAL LOAD */
     window.addEventListener('DOMContentLoaded', async () => {
-      // Send default font sizes immediately on load
       setTimeout(() => {
         applyFontSettings();
       }, 300);
 
-      // Warmup group default
       const select = document.getElementById('warmupSelect');
       if (select) {
         select.value = "1";
@@ -362,5 +294,6 @@
       }
     });
   </script>
+
 </body>
 </html>
