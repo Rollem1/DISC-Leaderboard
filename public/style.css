@@ -69,23 +69,18 @@ html, body {
 }
 
 /* Scoreboard view active → show scoreboardBanner */
-#scoreboardView:not([style*="display:none"]) #scoreboardBanner {
+#scoreboardView:not([style*="display:none"]) ~ #header #scoreboardBanner {
   display: block;
 }
 
 /* Warmup view active → show warmupBanner */
-#warmupView:not([style*="display:none"]) #warmupBanner {
+#warmupView:not([style*="display:none"]) ~ #header #warmupBanner {
   display: block;
 }
 
 /* Message view active → show messageBanner */
-#messageView:not([style*="display:none"]) #messageBanner {
+#messageView:not([style*="display:none"]) ~ #header #messageBanner {
   display: block;
-}
-
-/* Disable old per-view banner completely */
-.fixed-header {
-  display: none !important;
 }
 
 /* Push content below the new two-line banner */
