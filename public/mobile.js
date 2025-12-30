@@ -21,7 +21,7 @@ function renderFromState(data) {
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);
   } else {
-    document.body.style.removeProperty('--overlay-bg'); // allow CSS fallback
+    document.body.style.removeProperty('--overlay-bg');
   }
 
   if (data.viewMode === 'scoreboard') renderScoreboardView(data);
@@ -31,6 +31,7 @@ function renderFromState(data) {
 
 function renderScoreboardView(data) {
   hideAllViews();
+  document.body.dataset.view = 'scoreboard';   // ⭐ REQUIRED
   document.getElementById('scoreboardView').style.display = 'block';
 
   const categoryText = data.categoryName || '';
@@ -109,6 +110,7 @@ function renderScoreboardView(data) {
 
 function renderWarmupView(data) {
   hideAllViews();
+  document.body.dataset.view = 'warmup';   // ⭐ REQUIRED
   document.getElementById('warmupView').style.display = 'block';
 
   const categoryText = data.categoryName || "";
@@ -128,6 +130,7 @@ function renderWarmupView(data) {
 
 function renderMessageView(data) {
   hideAllViews();
+  document.body.dataset.view = 'message';   // ⭐ REQUIRED
   document.getElementById('messageView').style.display = 'flex';
   document.getElementById('messageBanner').textContent = "Announcement";
   document.getElementById('generalMessage').textContent = data.message || '';
