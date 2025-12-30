@@ -58,6 +58,16 @@ body::before {
 }
 .fixed-header h2 { margin: 0; font-size: 16px; }
 
+/* ⭐ NEW: Hide old per-view headers (mobile uses unified banner) */
+#scoreboardView h1,
+#scoreboardView h2,
+#warmupView h1,
+#warmupView h2,
+#messageView h1,
+#messageView h2 {
+  display: none;
+}
+
 /* Views */
 .view {
   position: relative;
@@ -65,6 +75,14 @@ body::before {
   min-height: 100vh;
   box-sizing: border-box;
   background: transparent !important;
+}
+
+/* ⭐ NEW: Prevent scroll content from appearing behind banner */
+.scroll-container,
+#scrollWrapper {
+  padding-top: calc(var(--header-h) + var(--banner-h));
+  box-sizing: border-box;
+  overflow: hidden; /* ensures nothing slides under banner */
 }
 
 /* Current/Next */
@@ -90,7 +108,7 @@ body::before {
     0.2fr   /* position */
     2.8fr   /* name */
     0.3fr   /* club */
-    0.4fr;    /* score */
+    0.4fr;  /* score */
   align-items: center;
   gap: 4px;
   margin: 4px auto;
