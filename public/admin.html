@@ -7,7 +7,17 @@
 
   <style>
     .admin-input { padding: 8px 12px; font-size: 16px; border-radius: 4px; border: 1px solid #555; background: #111; color: #fff; }
-    .admin-button { padding: 8px 16px; font-size: 16px; background: #0ff; color: #000; border: none; border-radius: 4px; cursor: pointer; }
+	.admin-button {
+	  padding: 8px 16px;
+	  font-size: 16px;
+	  background: #0ff;
+	  color: #000;
+	  border: none;
+	  border-radius: 4px;
+	  cursor: pointer;
+	  min-width: 180px;    /* ⭐ Add this */
+	  text-align: center;
+	}
     .admin-button:hover { background: #0cc; }
     form, select, button { margin: 10px 0; }
     .admin-row { display: flex; align-items: center; gap: 10px; margin: 10px auto; width: 90%; max-width: 800px; background: #222; padding: 10px; border-radius: 5px; }
@@ -55,20 +65,24 @@
     <button type="submit" class="admin-button">Update</button>
   </form>
 
+  <h2>Background Image</h2>
+	<form id="bgForm" enctype="multipart/form-data">
+	  <input type="file" name="file" accept="image/*" class="admin-input">
+	  <button type="submit" class="admin-button">Upload Background</button>
+	  <button id="clearBg" class="admin-button">Clear Background</button>
+	</form>
+
+  <h2>General Message</h2>
+  <textarea id="messageText" class="admin-input" rows="3"
+    placeholder="Enter message e.g. Back after lunch at 14:30"></textarea>
+  <button class="admin-button" onclick="updateMessage()">Update Message</button>
+
+
   <h2>Upload Skater List (CSV)</h2>
   <form id="uploadForm" enctype="multipart/form-data">
     <input type="file" id="file" name="file" accept=".csv" required class="admin-input">
     <button type="submit" class="admin-button">Upload</button>
   </form>
-
-	<form id="bgForm" enctype="multipart/form-data">
-	  <input type="file" name="file" accept="image/*" class="admin-input">
-	  <button type="submit" class="admin-button">Upload Background</button>
-
-	</form>
-
-	<button id="clearBg" class="admin-button">Clear Background</button>
-
 
 
   <h2>View Mode</h2>
@@ -76,10 +90,7 @@
   <button class="admin-button" onclick="setViewMode('warmup')">Show Warm-Up</button>
   <button class="admin-button" onclick="setViewMode('message')">Show Message</button>
 
-  <h2>General Message</h2>
-  <textarea id="messageText" class="admin-input" rows="3"
-    placeholder="Enter message e.g. Back after lunch at 14:30"></textarea>
-  <button class="admin-button" onclick="updateMessage()">Update Message</button>
+
 
   <h2>Select Warm-Up Group</h2>
   <select id="warmupSelect" onchange="setWarmupGroup()" class="admin-input">
