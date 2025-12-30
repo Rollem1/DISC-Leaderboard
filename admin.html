@@ -93,8 +93,6 @@
   </style>
 </head>
 
-
-
 <body class="admin-page">
   <h1>Admin Panel</h1>
 
@@ -110,22 +108,23 @@
     <button type="submit" class="admin-button">Upload</button>
   </form>
 
+  <h2>Background Image</h2>
   <form id="bgForm" enctype="multipart/form-data">
     <input type="file" name="file" accept="image/*" class="admin-input">
     <button type="submit" class="admin-button">Upload Background</button>
   </form>
 
-  <button id="clearBg" class="admin-button">Clear Background</button>
-
-  <h2>View Mode</h2>
-  <button class="admin-button" onclick="setViewMode('scoreboard')">Show Scoreboard</button>
-  <button class="admin-button" onclick="setViewMode('warmup')">Show Warm-Up</button>
-  <button class="admin-button" onclick="setViewMode('message')">Show Message</button>
+  <button type="button" id="clearBg" class="admin-button">Clear Background</button>
 
   <h2>General Message</h2>
   <textarea id="messageText" class="admin-input" rows="3"
     placeholder="Enter message e.g. Back after lunch at 14:30"></textarea>
-  <button class="admin-button" onclick="updateMessage()">Update Message</button>
+  <button type="button" class="admin-button" onclick="updateMessage()">Update Message</button>
+
+  <h2>View Mode</h2>
+  <button type="button" class="admin-button" onclick="setViewMode('scoreboard')">Show Scoreboard</button>
+  <button type="button" class="admin-button" onclick="setViewMode('warmup')">Show Warm-Up</button>
+  <button type="button" class="admin-button" onclick="setViewMode('message')">Show Message</button>
 
   <h2>Select Warm-Up Group</h2>
   <select id="warmupSelect" onchange="setWarmupGroup()" class="admin-input">
@@ -140,7 +139,7 @@
   <div id="skaterList"></div>
 
   <h2>Font Settings</h2>
-  <button class="admin-button" onclick="openFontPopup()">Open Font Settings</button>
+  <button type="button" class="admin-button" onclick="openFontPopup()">Open Font Settings</button>
 
   <div id="fontPopup" class="popup">
     <h2>Font Size Settings</h2>
@@ -169,7 +168,7 @@
       <input type="number" id="currentNextFont" class="admin-input" value="54"> px
     </label>
 
-    <button class="admin-button" onclick="saveAndCloseFontPopup()">Close</button>
+    <button type="button" class="admin-button" onclick="saveAndCloseFontPopup()">Close</button>
   </div>
 
   <p id="status"></p>
