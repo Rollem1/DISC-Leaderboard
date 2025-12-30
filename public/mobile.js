@@ -17,7 +17,6 @@ function hideAllViews() {
 
 function renderFromState(data) {
   document.getElementById('competitionName').textContent = data.competitionName || '';
-  document.getElementById('categoryName').textContent = '';
 
   if (data.backgroundImage) {
     document.body.style.setProperty('--overlay-bg', `url(${data.backgroundImage})`);

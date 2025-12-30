@@ -1,6 +1,5 @@
 :root {
   --header-h: 50px;
-  --banner-h: 45px;
 }
 
 /* Base */
@@ -27,7 +26,7 @@ body::before {
   z-index: -1;
 }
 
-/* Header */
+/* Unified header (competition + second line from JS) */
 #header {
   position: fixed;
   top: 0; left: 0;
@@ -40,49 +39,37 @@ body::before {
   justify-content: flex-start;
   padding-top: 6px;
 }
-#header h1 { margin: 0 0 4px; font-size: 18px; }
-#header h2 { margin: 0; font-size: 16px; }
 
-/* Banner */
-.fixed-header {
-  position: fixed;
-  top: calc(var(--header-h) + 2px);
-  left: 0;
-  width: 100%;
-  height: var(--banner-h);
-  background: rgba(34,34,34,0.85);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+#header h1 {
+  margin: 0 0 4px;
+  font-size: 18px; /* keep existing mobile font sizes */
 }
-.fixed-header h2 { margin: 0; font-size: 16px; }
 
-/* ⭐ NEW: Hide old per-view headers (mobile uses unified banner) */
-#scoreboardView h1,
-#scoreboardView h2,
-#warmupView h1,
-#warmupView h2,
-#messageView h1,
-#messageView h2 {
+#header h2 {
+  margin: 0;
+  font-size: 16px; /* keep existing mobile font sizes */
+}
+
+/* ❌ Old per-view banner bar – hide it entirely */
+.fixed-header {
   display: none;
 }
 
-/* Views */
+/* Views (content starts below unified header) */
 .view {
   position: relative;
-  padding-top: calc(var(--header-h) + var(--banner-h) + 15px);
+  padding-top: calc(var(--header-h) + 15px);
   min-height: 100vh;
   box-sizing: border-box;
   background: transparent !important;
 }
 
-/* ⭐ NEW: Prevent scroll content from appearing behind banner */
+/* Prevent scroll content from appearing under header */
 .scroll-container,
 #scrollWrapper {
-  padding-top: calc(var(--header-h) + var(--banner-h));
+  padding-top: var(--header-h);
   box-sizing: border-box;
-  overflow: hidden; /* ensures nothing slides under banner */
+  overflow: hidden;
 }
 
 /* Current/Next */
@@ -92,7 +79,9 @@ body::before {
   background: rgba(17,17,17,0.55);
   padding: 8px;
 }
-#currentSkater, #nextSkater {
+
+#currentSkater,
+#nextSkater {
   font-size: 14px;
   font-weight: bold;
   margin: 4px 0;
@@ -121,16 +110,28 @@ body::before {
   margin-left: auto;
   margin-right: auto;
 }
+
 .leaderboard-row span {
   align-self: center;
 }
+
 .leaderboard-row .club,
 .leaderboard-row .score {
   white-space: nowrap;
 }
-.top3 { background: rgba(51,51,51,0.55); }
-.leaderboard-row img { width: 20px; height: 20px; }
-.medal-spacer { width: 20px; }
+
+.top3 {
+  background: rgba(51,51,51,0.55);
+}
+
+.leaderboard-row img {
+  width: 20px;
+  height: 20px;
+}
+
+.medal-spacer {
+  width: 20px;
+}
 
 /* Warm-up */
 .scroll-container {
@@ -140,6 +141,7 @@ body::before {
   height: auto;
   background: transparent !important;
 }
+
 #warmupList > div {
   margin: 6px;
   padding: 8px;
@@ -149,6 +151,7 @@ body::before {
   text-align: center;
   font-size: 18px;
 }
+
 #warmupList > div:nth-child(even) {
   background: rgba(51,51,51,0.55);
 }
@@ -158,7 +161,7 @@ body::before {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: calc(var(--header-h) + var(--banner-h) + 15px);
+  padding-top: calc(var(--header-h) + 15px);
   min-height: 100vh;
   box-sizing: border-box;
 }
@@ -178,4 +181,23 @@ body::before {
   max-height: fit-content;
   overflow-wrap: break-word;
   word-break: break-word;
+}
+/* Hide all second-line banners by default */
+#scoreboardBanner,
+#warmupBanner,
+#messageBanner {
+  display: none;
+}
+
+/* Show correct banner based on active view */
+body[data-view="scoreboard"] #scoreboardBanner {
+  display: block;
+}
+
+body[data-view="warmup"] #warmupBanner {
+  display: block;
+}
+
+body[data-view="message"] #messageBanner {
+  display: block;
 }
