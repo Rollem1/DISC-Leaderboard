@@ -181,15 +181,40 @@ function renderScoreboardView(data) {
     else scrollingDiv.appendChild(row);
   });
 
-  // Scrolling animation decision
-  requestAnimationFrame(() => {
-    positionScrollWrapper();
-    const contentHeight = scrollingDiv.scrollHeight;
-    const containerHeight = document.getElementById('scrollWrapper').offsetHeight;
-    scrollingDiv.style.animation = contentHeight > containerHeight
-      ? `scrollOnce ${contentHeight / 30}s linear infinite`
-      : 'none';
+// Scrolling animation decision
+requestAnimationFrame(() => {
+  positionScrollWrapper();
+  const contentHeight = scrollingDiv.scrollHeight;
+  const containerHeight = document.getElementById('scrollWrapper').offsetHeight;
+
+  if (contentHeight <= containerHeight) {
+    scrollingDiv.style.animation = 'none';
+    return;
+  }
+
+  const duration = contentHeight / 30; // your existing speed
+
+  // Reset any previous animation
+  scrollingDiv.style.animation = 'none';
+  scrollingDiv.style.transform = 'translateY(0)';
+
+  // Start scroll after 3-second pause
+  setTimeout(() => {
+    scrollingDiv.style.animation = `scrollOnce ${duration}s linear`;
+  }, 3000);
+
+  // When animation ends, restart cycle with pause
+  scrollingDiv.addEventListener('animationend', function handler() {
+    scrollingDiv.removeEventListener('animationend', handler);
+
+    scrollingDiv.style.animation = 'none';
+    scrollingDiv.style.transform = 'translateY(0)';
+
+    setTimeout(() => {
+      scrollingDiv.style.animation = `scrollOnce ${duration}s linear`;
+    }, 3000);
   });
+});
 }
 
 function renderWarmupView(data) {
