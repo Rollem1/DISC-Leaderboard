@@ -43,7 +43,7 @@ body::before {
 
 .view {
   position: relative;
-  padding-top: 60px;                 /* ⭐ REDUCED: fixes content being too low */
+  padding-top: 55px;                 /* ⭐ REDUCED: fixes content being too low */
   min-height: 100vh;
   box-sizing: border-box;
   background: transparent !important;
@@ -51,7 +51,7 @@ body::before {
 
 /* Warm-up view should sit directly under the header */
 #warmupView {
-  padding-top: 0;
+  padding-top: 50;
 }
 
 #header h1 {
