@@ -6,7 +6,6 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const csv = require('csv-parser');
-const ADMIN_PASSWORD = "changeme123";   // pick your own password
 
 const app = express();
 app.use(bodyParser.json());
